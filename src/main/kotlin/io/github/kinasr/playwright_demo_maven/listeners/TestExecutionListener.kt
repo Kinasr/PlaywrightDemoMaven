@@ -1,9 +1,8 @@
 package io.github.kinasr.playwright_demo_maven.listeners
 
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
-import io.github.kinasr.playwright_demo_maven.utils.report.Report
-import io.github.kinasr.playwright_demo_maven.utils.report.model.ReportStatus
-import io.qameta.allure.Allure
+import io.github.kinasr.playwright_demo_maven.utils.report2.Report
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.ReportStatus
 import io.qameta.allure.listener.ContainerLifecycleListener
 import io.qameta.allure.listener.FixtureLifecycleListener
 import io.qameta.allure.listener.StepLifecycleListener
@@ -17,7 +16,6 @@ import org.koin.core.component.inject
 import org.testng.ITestContext
 import org.testng.ITestListener
 import org.testng.ITestResult
-import java.util.UUID
 
 /**
  * TestNG listener for test execution events.

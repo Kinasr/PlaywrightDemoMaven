@@ -1,12 +1,12 @@
-package io.github.kinasr.playwright_demo_maven.utils.report.allure
+package io.github.kinasr.playwright_demo_maven.utils.report2.allure
 
 import io.github.kinasr.playwright_demo_maven.config.Config
-import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureHelper.mapToAllureStatus
-import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportCore
-import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportStepCore
-import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.LinkType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.ReportStatus
+import io.github.kinasr.playwright_demo_maven.utils.report2.allure.AllureHelper.mapToAllureStatus
+import io.github.kinasr.playwright_demo_maven.utils.report2.core.ReportCore
+import io.github.kinasr.playwright_demo_maven.utils.report2.core.ReportStepCore
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.LinkType
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.ReportStatus
 import io.github.kinasr.playwright_demo_maven.utils.requireNotBlank
 import io.qameta.allure.Allure
 import io.qameta.allure.AllureLifecycle

@@ -1,9 +1,8 @@
-package io.github.kinasr.playwright_demo_maven.utils.report
+package io.github.kinasr.playwright_demo_maven.utils.report2
 
-import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportStepCore
-import io.github.kinasr.playwright_demo_maven.utils.report.manager.ReportFactory
-import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.ReportStatus
+import io.github.kinasr.playwright_demo_maven.utils.report2.core.ReportStepCore
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.ReportStatus
 
 class ReportStep constructor(private val reportsStep: List<ReportStepCore>) {
     

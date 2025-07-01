@@ -1,4 +1,4 @@
-package io.github.kinasr.playwright_demo_maven.utils.report.model
+package io.github.kinasr.playwright_demo_maven.utils.report2.model
 
 /**
  * Represents the possible statuses of a test or test step in the reporting system.

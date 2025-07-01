@@ -1,10 +1,10 @@
-package io.github.kinasr.playwright_demo_maven.utils.report.core
+package io.github.kinasr.playwright_demo_maven.utils.report2.core
 
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
-import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.LinkType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.ReportStatus
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.LinkType
+import io.github.kinasr.playwright_demo_maven.utils.report2.model.ReportStatus
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
