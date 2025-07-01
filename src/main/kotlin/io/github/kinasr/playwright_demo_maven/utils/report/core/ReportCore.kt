@@ -9,14 +9,15 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
 
-abstract class Report(private val reportPath: String) : KoinComponent {
+
+abstract class ReportCore(private val reportPath: String) : KoinComponent {
     protected val logger: PlayLogger by inject<PlayLogger>(named(LoggerName.REPORT))
 
     abstract fun start(testName: String, description: String? = null)
     
     abstract fun end(testName: String, status: ReportStatus)
 
-    abstract fun addStep(name: String): ReportStep
+    abstract fun addStep(name: String): ReportStepCore
     
     abstract fun addStep(name: String, status: ReportStatus)
     

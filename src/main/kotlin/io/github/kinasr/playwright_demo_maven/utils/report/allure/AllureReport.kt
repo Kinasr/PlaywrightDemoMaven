@@ -2,8 +2,8 @@ package io.github.kinasr.playwright_demo_maven.utils.report.allure
 
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureHelper.mapToAllureStatus
-import io.github.kinasr.playwright_demo_maven.utils.report.core.Report
-import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportStep
+import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportCore
+import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportStepCore
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
 import io.github.kinasr.playwright_demo_maven.utils.report.model.LinkType
 import io.github.kinasr.playwright_demo_maven.utils.report.model.ReportStatus
@@ -20,12 +20,12 @@ import java.io.File
 import java.util.*
 
 /**
- * Implementation of the [Report] interface for Allure reporting.
+ * Implementation of the [ReportCore] interface for Allure reporting.
  *
  * This class handles the creation and management of Allure test reports, including test steps,
  * attachments, and test metadata.
  */
-class AllureReport(reportPath: String) : Report(reportPath), KoinComponent {
+class AllureReport(reportPath: String) : ReportCore(reportPath), KoinComponent {
 
     private val lifecycle: AllureLifecycle by inject()
 
@@ -81,7 +81,7 @@ class AllureReport(reportPath: String) : Report(reportPath), KoinComponent {
         }
     }
 
-    override fun addStep(name: String): ReportStep {
+    override fun addStep(name: String): ReportStepCore {
         val reportStep: AllureReportStep by inject()
         requireNotBlank(name, "Step name")
 

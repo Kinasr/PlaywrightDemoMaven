@@ -1,7 +1,7 @@
 package io.github.kinasr.playwright_demo_maven.utils.report.allure
 
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureHelper.mapToAllureStatus
-import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportStep
+import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportStepCore
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
 import io.github.kinasr.playwright_demo_maven.utils.report.model.ReportStatus
 import io.github.kinasr.playwright_demo_maven.utils.requireNotBlank
@@ -15,16 +15,16 @@ import org.koin.core.component.inject
 import java.io.ByteArrayInputStream
 
 /**
- * Implementation of [ReportStep] for Allure reporting.
+ * Implementation of [ReportStepCore] for Allure reporting.
  *
  * This class represents a single step in an Allure test report and provides methods
  * to update the step's status, add parameters, and attach files.
  *
  */
-class AllureReportStep() : ReportStep(), KoinComponent {
+class AllureReportStep() : ReportStepCore(), KoinComponent {
     private val lifecycle: AllureLifecycle by inject()
     
-    override fun initialize(name: String): ReportStep {
+    override fun initialize(name: String): ReportStepCore {
         this.name = name
         lifecycle.startStep(this.uuid, uuid, StepResult().apply {
             setName(name)
@@ -42,7 +42,7 @@ class AllureReportStep() : ReportStep(), KoinComponent {
      * @return The updated step instance for method chaining
      * @throws IllegalStateException if the step is already closed
      */
-    override fun update(status: ReportStatus, name: String?): ReportStep {
+    override fun update(status: ReportStatus, name: String?): ReportStepCore {
         checkNotClosed()
 
         return try {
@@ -69,7 +69,7 @@ class AllureReportStep() : ReportStep(), KoinComponent {
      * @throws IllegalArgumentException if name is blank
      * @throws IllegalStateException if the step is already closed
      */
-    override fun addParameter(name: String, value: String): ReportStep {
+    override fun addParameter(name: String, value: String): ReportStepCore {
         requireNotBlank(name, "Parameter name")
         checkNotClosed()
 
@@ -129,7 +129,7 @@ class AllureReportStep() : ReportStep(), KoinComponent {
      * @throws IllegalArgumentException if name is blank
      * @throws IllegalStateException if the step is already closed
      */
-    override fun addChildStep(name: String): ReportStep {
+    override fun addChildStep(name: String): ReportStepCore {
         val childStep : AllureReportStep by inject()
         requireNotBlank(name, "Step name")
         checkNotClosed()
@@ -157,35 +157,11 @@ class AllureReportStep() : ReportStep(), KoinComponent {
             .close()
     }
 
-    override fun passed() {
-        updateStatusAndClose(this.uuid, Status.PASSED)
-    }
-
-    override fun failed() {
-        updateStatusAndClose(this.uuid, Status.FAILED)
-    }
-
-    override fun skipped() {
-        updateStatusAndClose(this.uuid, Status.SKIPPED)
-    }
-
-    override fun broken() {
-        updateStatusAndClose(this.uuid, Status.BROKEN)
-    }
-
     override fun close() {
         update(this.uuid) { result ->
             result.setStop(System.currentTimeMillis())
         }
         lifecycle.stopStep(this.uuid)
-    }
-
-    private fun updateStatusAndClose(id: String, status: Status) {
-        update(id) { result ->
-            result.setStatus(status)
-            result.setStop(System.currentTimeMillis())
-        }
-        lifecycle.stopStep(id)
     }
 
     private fun update(id: String, result: (StepResult) -> StepResult) {

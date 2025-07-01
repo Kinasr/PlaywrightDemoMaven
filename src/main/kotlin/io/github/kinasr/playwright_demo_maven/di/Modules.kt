@@ -12,7 +12,6 @@ import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureReport
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureReportStep
-import io.github.kinasr.playwright_demo_maven.utils.report.core.ReportStep
 import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
