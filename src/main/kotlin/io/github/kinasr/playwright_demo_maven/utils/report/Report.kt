@@ -12,7 +12,7 @@ import org.koin.core.component.inject
  * Main facade for the reporting system
  * Provides a clean API for test reporting operations
  */
-object TestReporting: KoinComponent {
+object Report: KoinComponent {
     private val reporters get() = ReporterFactory.getActiveReporters()
     private val stepFactory: CompositeTestStepFactory by inject()
 

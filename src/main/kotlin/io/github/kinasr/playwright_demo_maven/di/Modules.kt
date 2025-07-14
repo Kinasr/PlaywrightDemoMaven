@@ -14,9 +14,6 @@ import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFact
 import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFactoryImpl
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestReporter
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestStep
-import io.github.kinasr.playwright_demo_maven.utils.report2.allure.AllureReport
-import io.github.kinasr.playwright_demo_maven.utils.report2.allure.AllureReportStep
-import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -46,10 +43,6 @@ val testModule = module {
 }
 
 val reportModule = module {
-//    single { Allure.getLifecycle() }
-//    single { AllureReport(Config.Allure().resultsDirectory) }
-//    factory { AllureReportStep() }
-
     // Factories
     single<CompositeTestStepFactory> { CompositeTestStepFactoryImpl() }
 

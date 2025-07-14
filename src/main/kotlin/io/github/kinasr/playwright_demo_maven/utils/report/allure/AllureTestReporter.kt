@@ -31,6 +31,11 @@ class AllureTestReporter(private val reportPath: String) : TestReporter, KoinCom
     private val lifecycle: AllureLifecycle by inject()
     private val logger: PlayLogger by inject(named(LoggerName.REPORT))
 
+    override fun initReporter() {
+        Allure.getLifecycle()
+        
+    }
+    
     override fun startTest(testName: String, description: String?) {
         requireNotBlank(testName, "Test name")
 
