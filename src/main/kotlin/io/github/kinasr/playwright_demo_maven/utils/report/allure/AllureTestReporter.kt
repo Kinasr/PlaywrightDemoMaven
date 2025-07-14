@@ -1,6 +1,7 @@
 package io.github.kinasr.playwright_demo_maven.utils.report.allure
 
 import io.github.kinasr.playwright_demo_maven.config.Config
+import io.github.kinasr.playwright_demo_maven.utils.file.PropertiesManager
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.core.TestReporter
@@ -31,9 +32,8 @@ class AllureTestReporter(private val reportPath: String) : TestReporter, KoinCom
     private val lifecycle: AllureLifecycle by inject()
     private val logger: PlayLogger by inject(named(LoggerName.REPORT))
 
-    override fun initReporter() {
-        Allure.getLifecycle()
-        
+    override fun initReporter(props:Map<String, String>) {
+        PropertiesManager.createOrUpdateProperties(reportPath, "environment.properties", props)
     }
     
     override fun startTest(testName: String, description: String?) {

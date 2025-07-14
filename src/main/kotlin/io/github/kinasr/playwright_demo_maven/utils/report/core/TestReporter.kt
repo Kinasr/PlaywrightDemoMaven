@@ -8,7 +8,7 @@ import io.github.kinasr.playwright_demo_maven.utils.report.model.TestStatus
  * Core interface for test reporting systems
  */
 interface TestReporter {
-    fun initReporter()
+    fun initReporter(props:Map<String, String>)
     fun startTest(testName: String, description: String? = null)
     fun endTest(testName: String, status: TestStatus)
     fun createStep(name: String): TestStep
