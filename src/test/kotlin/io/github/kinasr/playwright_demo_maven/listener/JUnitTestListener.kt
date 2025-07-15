@@ -1,18 +1,15 @@
 package io.github.kinasr.playwright_demo_maven.listener
 
-import io.github.kinasr.playwright_demo_maven.di.mainModule
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
-import io.github.kinasr.playwright_demo_maven.utils.report.model.TestStatus
-import org.junit.jupiter.api.extension.AfterEachCallback
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback
-import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback
 import org.junit.jupiter.api.extension.ExtensionContext
-import org.koin.core.context.startKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class JUnitTestListener : BeforeTestExecutionCallback {
-    
+class JUnitTestListener : KoinComponent, BeforeTestExecutionCallback {
+    private val report: Report by inject()
+
     override fun beforeTestExecution(context: ExtensionContext?) {
-        Report.startTest(context?.displayName ?: "Unknown")
+        report.startTest(context?.displayName ?: "Unknown")
     }
 }

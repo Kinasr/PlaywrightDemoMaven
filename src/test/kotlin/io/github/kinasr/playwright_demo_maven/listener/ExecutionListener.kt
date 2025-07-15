@@ -10,17 +10,21 @@ import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.launcher.TestExecutionListener
 import org.junit.platform.launcher.TestIdentifier
 import org.junit.platform.launcher.TestPlan
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.core.context.startKoin
+import kotlin.getValue
 
-class ExecutionListener : TestExecutionListener {
+class ExecutionListener : KoinComponent, TestExecutionListener {
 
     override fun testPlanExecutionStarted(testPlan: TestPlan?) {
         startKoin {
             modules(mainModule, logModule, reportModule)
         }
 
-        Report.cleanup()
-        Report.init(
+        val report: Report by inject()
+        report.cleanup()
+        report.init(
             mapOf(
                 "os" to System.getProperty("os.name"),
                 "os.version" to System.getProperty("os.version"),
@@ -36,11 +40,14 @@ class ExecutionListener : TestExecutionListener {
                 TestExecutionResult.Status.FAILED -> TestStatus.FAILED
                 else -> TestStatus.SKIPPED
             }
-            Report.endTest(testIdentifier.displayName, testStatus)
+            
+            val report: Report by inject()
+            report.endTest(testIdentifier.displayName, testStatus)
         }
     }
 
     override fun testPlanExecutionFinished(testPlan: TestPlan?) {
-        Report.generate()
+        val report: Report by inject()
+        report.generate()
     }
 }

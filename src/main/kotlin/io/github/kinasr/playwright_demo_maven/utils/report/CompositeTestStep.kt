@@ -64,7 +64,7 @@ class CompositeTestStep internal constructor(private val steps: List<TestStep>) 
     /**
      * Executes a block of code as a child step with boolean result
      */
-    fun childStep(name: String, action: () -> Boolean) {
+    fun childStepBool(name: String, action: () -> Boolean) {
         val childStep = createChildStep(name)
         try {
             val result = action()

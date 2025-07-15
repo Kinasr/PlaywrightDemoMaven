@@ -12,6 +12,7 @@ import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFactory
 import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFactoryImpl
+import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestReporter
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestStep
 import org.koin.core.qualifier.named
@@ -49,4 +50,6 @@ val reportModule = module {
 
     // Steps - Use factory pattern for steps since they need to be created per test
     factory { AllureTestStep() }
+    
+    single { Report() }
 }
