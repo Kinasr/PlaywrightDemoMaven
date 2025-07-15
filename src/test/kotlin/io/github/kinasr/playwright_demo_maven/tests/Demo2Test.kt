@@ -4,7 +4,7 @@ import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
 import io.github.kinasr.playwright_demo_maven.config.Config
-import io.github.kinasr.playwright_demo_maven.di.testModule
+import io.github.kinasr.playwright_demo_maven.di.mainModule
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Test
@@ -24,7 +24,7 @@ class Demo2Test : KoinTest {
     @Test
     fun ttt() {
         startKoin {
-            modules(testModule)
+            modules(mainModule)
         }
 
         browserManager.initializeBrowser()

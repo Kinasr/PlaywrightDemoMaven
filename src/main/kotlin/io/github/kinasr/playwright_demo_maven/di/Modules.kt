@@ -17,10 +17,7 @@ import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestStep
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-/**
- * Main test module that includes all required dependencies for testing.
- */
-val testModule = module {
+val mainModule = module {
 
     // Config
     single { ConfigLoader() }
@@ -37,8 +34,9 @@ val testModule = module {
     // Utilities
     single { TestDataProvider() }
     single { ScreenshotHelper(get()) }
+}
 
-    // Logger
+var logModule = module {
     single(named(LoggerName.REPORT)) { PlayLogger.get(LoggerName.REPORT) }
 }
 

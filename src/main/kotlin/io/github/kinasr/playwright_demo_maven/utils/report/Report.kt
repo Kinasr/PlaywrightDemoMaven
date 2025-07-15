@@ -16,6 +16,10 @@ object Report: KoinComponent {
     private val reporters get() = ReporterFactory.getActiveReporters()
     private val stepFactory: CompositeTestStepFactory by inject()
 
+    fun init(props: Map<String, String>) {
+        reporters.forEach { it.initReporter(props) }
+    }
+    
     /**
      * Starts a new test case
      */
@@ -96,7 +100,7 @@ object Report: KoinComponent {
     /**
      * Generates all reports
      */
-    fun generateReports() {
+    fun generate() {
         reporters.forEach { it.generateReport() }
     }
 
