@@ -27,4 +27,4 @@ logging:
   enableAPIDebug: true
   
 allure:
-  results.directory: "target/allure-results"
+  resultsDirectory: "allure-results"
