@@ -20,7 +20,6 @@ import io.qameta.allure.model.TestResult
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
-import org.koin.java.KoinJavaComponent.inject
 import java.io.File
 import java.util.UUID
 
@@ -33,6 +32,7 @@ class AllureTestReporter(private val reportPath: String) : TestReporter, KoinCom
     private val logger: PlayLogger by inject(named(LoggerName.REPORT))
 
     override fun initReporter(props:Map<String, String>) {
+        System.setProperty("allure.results.directory", reportPath)
         PropertiesManager.createOrUpdateProperties(reportPath, "environment.properties", props)
     }
     

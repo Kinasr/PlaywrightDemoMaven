@@ -12,10 +12,14 @@ import org.koin.core.component.inject
  * Main facade for the reporting system
  * Provides a clean API for test reporting operations
  */
-object Report: KoinComponent {
+class Report: KoinComponent {
     private val reporters get() = ReporterFactory.getActiveReporters()
     private val stepFactory: CompositeTestStepFactory by inject()
 
+    fun init(props: Map<String, String>) {
+        reporters.forEach { it.initReporter(props) }
+    }
+    
     /**
      * Starts a new test case
      */
@@ -58,7 +62,7 @@ object Report: KoinComponent {
     /**
      * Executes a block of code as a test step with boolean result
      */
-    fun step(name: String, action: () -> Boolean) {
+    fun stepBool(name: String, action: () -> Boolean) {
         val step = step(name)
         try {
             val result = action()
@@ -96,7 +100,7 @@ object Report: KoinComponent {
     /**
      * Generates all reports
      */
-    fun generateReports() {
+    fun generate() {
         reporters.forEach { it.generateReport() }
     }
 

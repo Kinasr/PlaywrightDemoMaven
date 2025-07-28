@@ -12,15 +12,13 @@ import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFactory
 import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFactoryImpl
+import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestReporter
 import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestStep
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-/**
- * Main test module that includes all required dependencies for testing.
- */
-val testModule = module {
+val mainModule = module {
 
     // Config
     single { ConfigLoader() }
@@ -37,8 +35,9 @@ val testModule = module {
     // Utilities
     single { TestDataProvider() }
     single { ScreenshotHelper(get()) }
+}
 
-    // Logger
+var logModule = module {
     single(named(LoggerName.REPORT)) { PlayLogger.get(LoggerName.REPORT) }
 }
 
@@ -51,4 +50,6 @@ val reportModule = module {
 
     // Steps - Use factory pattern for steps since they need to be created per test
     factory { AllureTestStep() }
+    
+    single { Report() }
 }

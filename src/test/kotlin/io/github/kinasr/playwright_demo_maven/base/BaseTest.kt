@@ -2,7 +2,7 @@ package io.github.kinasr.playwright_demo_maven.base
 
 import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
 import io.github.kinasr.playwright_demo_maven.config.Config
-import io.github.kinasr.playwright_demo_maven.di.testModule
+import io.github.kinasr.playwright_demo_maven.di.mainModule
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.qameta.allure.Allure
 import io.qameta.allure.Step
@@ -31,7 +31,7 @@ abstract class BaseTest : KoinTest {
 
         // Start Koin DI
         startKoin {
-            modules(testModule)
+            modules(mainModule)
         }
 
         // Initialize browser
