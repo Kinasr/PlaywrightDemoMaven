@@ -5,6 +5,7 @@ import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.mainModule
+import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Test
@@ -44,11 +45,16 @@ class Demo2Test : KoinTest {
 
     @Test
     fun t001() {
-
         println("00000000000")
         println(Config.Browser().name)
+//        Playwright.CreateOptions
         val playwright = Playwright.create()
         val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
+        val ctx1 = browser.newContext()
+        val ctx2 = browser.newContext()
+        
+        val page1 = ctx1.newPage().navigate("https://playwright.dev/")
+        val page2 = ctx2.newPage().navigate("https://google.com/")
 
 
         val page = browser.newPage()
