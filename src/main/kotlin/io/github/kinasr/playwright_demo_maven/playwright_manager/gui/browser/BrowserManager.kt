@@ -60,9 +60,10 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
     }
 
     private fun browserOptions(): BrowserType.LaunchOptions {
-        return BrowserType.LaunchOptions()
-            .setHeadless(Config.Browser().headless)
-            .setSlowMo(Config.Browser().slowMo)
+        return BrowserType.LaunchOptions().apply { 
+            headless = Config.Browser().headless
+            slowMo = Config.Browser().slowMo
+        }
     }
 
     fun close() {
