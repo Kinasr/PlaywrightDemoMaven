@@ -36,7 +36,7 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
     }
 
     private fun initBrowser() : Browser {
-        val options = BrowserType.LaunchOptions()
+        val options = browserOptions()
         
         return when (Config.Browser().name.lowercase()) {
             "firefox" -> playwright.firefox().launch(options)
@@ -53,6 +53,11 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
     
     fun close() {
         browserContext.get().close()
+        browserContext.remove()
+    }
+    
+    fun quit() {
+        close()
         browser?.close()
     }
 }
