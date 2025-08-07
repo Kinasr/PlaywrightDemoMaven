@@ -1,16 +1,15 @@
-package io.github.kinasr.playwright_demo_maven.utils.report.allure
+package io.github.kinasr.playwright_demo_maven.utils.report_old.allure
 
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
-import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFactory
-import io.github.kinasr.playwright_demo_maven.utils.report.core.TestStep
-import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.TestStatus
+import io.github.kinasr.playwright_demo_maven.utils.report_old.CompositeTestStepFactory
+import io.github.kinasr.playwright_demo_maven.utils.report_old.core.TestStep
+import io.github.kinasr.playwright_demo_maven.utils.report_old.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.utils.report_old.model.TestStatus
 import io.github.kinasr.playwright_demo_maven.utils.requireNotBlank
 import io.qameta.allure.Allure
 import io.qameta.allure.AllureLifecycle
 import io.qameta.allure.model.Parameter
-import io.qameta.allure.model.Status
 import io.qameta.allure.model.StepResult
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -38,7 +37,7 @@ class AllureTestStep : TestStep, KoinComponent {
 
     fun initialize(stepName: String): AllureTestStep {
         this.name = stepName
-        lifecycle.startStep(id, id, StepResult().apply {
+        lifecycle.startStep(id, StepResult().apply {
             setName(stepName)
             setStatus(stepStaus.toAllureStatus())
             setStart(startTime)

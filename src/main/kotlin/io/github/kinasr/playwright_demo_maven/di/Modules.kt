@@ -12,11 +12,12 @@ import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.github.kinasr.playwright_demo_maven.utils.TestDataProvider
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
-import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFactory
-import io.github.kinasr.playwright_demo_maven.utils.report.CompositeTestStepFactoryImpl
-import io.github.kinasr.playwright_demo_maven.utils.report.Report
-import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestReporter
-import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestStep
+import io.github.kinasr.playwright_demo_maven.utils.report_old.CompositeTestStepFactory
+import io.github.kinasr.playwright_demo_maven.utils.report_old.CompositeTestStepFactoryImpl
+import io.github.kinasr.playwright_demo_maven.utils.report_old.Report
+import io.github.kinasr.playwright_demo_maven.utils.report_old.allure.AllureTestReporter
+import io.github.kinasr.playwright_demo_maven.utils.report_old.allure.AllureTestStep
+import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -52,6 +53,7 @@ var logModule = module {
 }
 
 val reportModule = module {
+    single { Allure.getLifecycle() }
     // Factories
     single<CompositeTestStepFactory> { CompositeTestStepFactoryImpl() }
 

@@ -5,21 +5,29 @@ import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.mainModule
-import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
+import io.github.kinasr.playwright_demo_maven.utils.report.ReportStep
+import io.github.kinasr.playwright_demo_maven.utils.report_old.Report
+import io.github.kinasr.playwright_demo_maven.utils.report_old.model.LinkType
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.qameta.allure.Allure
+import io.qameta.allure.model.Status
+import io.qameta.allure.model.StepResult
 import org.junit.jupiter.api.Test
 import org.koin.core.context.startKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
+import java.io.File
 import java.lang.Thread.sleep
+import java.util.UUID
 
 class Demo2Test : KoinTest {
 
     protected val browserManager: BrowserManager by inject()
     protected val screenshotHelper: ScreenshotHelper by inject()
+    private val report : Report by inject()
 //    val config: Config by inject()
 
     @Test
@@ -50,15 +58,20 @@ class Demo2Test : KoinTest {
 //        Playwright.CreateOptions
         val playwright = Playwright.create()
         val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
-        val ctx1 = browser.newContext()
-        val ctx2 = browser.newContext()
+//        val ctx1 = browser.newContext()
+//        val ctx2 = browser.newContext()
+//        
+//        val page1 = ctx1.newPage()
+//        page1.navigate("https://playwright.dev/")
+//        val page2 = ctx2.newPage().navigate("https://google.com/")
+//        
+//        page1.locator("", Page.LocatorOptions())
+
         
-        val page1 = ctx1.newPage().navigate("https://playwright.dev/")
-        val page2 = ctx2.newPage().navigate("https://google.com/")
-
-
+        report.step("AAAAAAAAAA")
         val page = browser.newPage()
 
+        report.step("BBBBBBBBBBB")
         page.onLoad {
             print("000000000000000000000")
         }
@@ -68,6 +81,8 @@ class Demo2Test : KoinTest {
         page.click("text=Get Started")
 
 
+        report.addParameter("AAA", "BBB")
+        report.addLink("Google", "https://google.com/", LinkType.CUSTOM)
 
         sleep(10000)
         browser.close()
@@ -91,5 +106,46 @@ class Demo2Test : KoinTest {
         MDC.put("tag", "MyTag");
         logger.info("This is a tagged message");
         MDC.remove("tag");
+    }
+    
+    @Test
+    fun t003() {
+        val uuid01 = UUID.randomUUID().toString()
+        val uuid02 = UUID.randomUUID().toString()
+        
+        val lifecycle = Allure.getLifecycle()
+        val cUUID = lifecycle.currentTestCase.get()
+        
+        lifecycle.startStep(uuid01, StepResult().apply {
+            name = "AAA"
+            status = Status.FAILED
+        }) 
+        
+        lifecycle.startStep(uuid01, uuid02, StepResult().apply {
+            name = "BBB"
+            status = Status.FAILED
+        })
+        
+        lifecycle.stopStep(uuid01)
+        lifecycle.stopStep(uuid02)
+
+
+        File("").bufferedReader().use {  }        
+//        lifecycle.scheduleTestCase(TestResult().apply { 
+//            uuid = uuid01
+//            name = "AAA"
+//            start = System.currentTimeMillis()
+//            status = Status.FAILED
+//        })
+//        lifecycle.startTestCase(uuid01)
+//
+//        sleep(5000)
+//        
+//        lifecycle.updateTestCase(uuid01) {
+//            it.stop = System.currentTimeMillis()
+//            it.status = Status.SKIPPED
+//        }
+//        lifecycle.stopTestCase(uuid01)
+//        lifecycle.writeTestCase(uuid01)
     }
 }

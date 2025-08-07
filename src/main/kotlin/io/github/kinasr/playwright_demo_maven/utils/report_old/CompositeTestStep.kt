@@ -1,11 +1,10 @@
-package io.github.kinasr.playwright_demo_maven.utils.report
+package io.github.kinasr.playwright_demo_maven.utils.report_old
 
-import io.github.kinasr.playwright_demo_maven.utils.report.core.TestStep
-import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.TestStatus
+import io.github.kinasr.playwright_demo_maven.utils.report_old.core.TestStep
+import io.github.kinasr.playwright_demo_maven.utils.report_old.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.utils.report_old.model.TestStatus
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
 import java.util.UUID
 import kotlin.collections.firstOrNull
 import kotlin.collections.map

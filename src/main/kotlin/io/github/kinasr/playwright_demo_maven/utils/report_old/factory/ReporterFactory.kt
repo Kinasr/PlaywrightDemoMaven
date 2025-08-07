@@ -1,7 +1,7 @@
-package io.github.kinasr.playwright_demo_maven.utils.report.factory
+package io.github.kinasr.playwright_demo_maven.utils.report_old.factory
 
-import io.github.kinasr.playwright_demo_maven.utils.report.allure.AllureTestReporter
-import io.github.kinasr.playwright_demo_maven.utils.report.core.TestReporter
+import io.github.kinasr.playwright_demo_maven.utils.report_old.allure.AllureTestReporter
+import io.github.kinasr.playwright_demo_maven.utils.report_old.core.TestReporter
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

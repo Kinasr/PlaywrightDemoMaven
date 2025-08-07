@@ -1,8 +1,8 @@
-package io.github.kinasr.playwright_demo_maven.utils.report.core
+package io.github.kinasr.playwright_demo_maven.utils.report_old.core
 
-import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.LinkType
-import io.github.kinasr.playwright_demo_maven.utils.report.model.TestStatus
+import io.github.kinasr.playwright_demo_maven.utils.report_old.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.utils.report_old.model.LinkType
+import io.github.kinasr.playwright_demo_maven.utils.report_old.model.TestStatus
 
 /**
  * Core interface for test reporting systems
