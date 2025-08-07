@@ -3,7 +3,6 @@ package io.github.kinasr.playwright_demo_maven.di
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
-import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
@@ -12,11 +11,6 @@ import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.github.kinasr.playwright_demo_maven.utils.TestDataProvider
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
-import io.github.kinasr.playwright_demo_maven.utils.report_old.CompositeTestStepFactory
-import io.github.kinasr.playwright_demo_maven.utils.report_old.CompositeTestStepFactoryImpl
-import io.github.kinasr.playwright_demo_maven.utils.report_old.Report
-import io.github.kinasr.playwright_demo_maven.utils.report_old.allure.AllureTestReporter
-import io.github.kinasr.playwright_demo_maven.utils.report_old.allure.AllureTestStep
 import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -54,14 +48,4 @@ var logModule = module {
 
 val reportModule = module {
     single { Allure.getLifecycle() }
-    // Factories
-    single<CompositeTestStepFactory> { CompositeTestStepFactoryImpl() }
-
-    // Reporters
-    single { AllureTestReporter(Config.Allure().resultsDirectory) }
-
-    // Steps - Use factory pattern for steps since they need to be created per test
-    factory { AllureTestStep() }
-
-    single { Report() }
 }

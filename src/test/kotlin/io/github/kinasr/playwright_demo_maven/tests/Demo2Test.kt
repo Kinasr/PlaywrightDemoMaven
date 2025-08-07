@@ -6,9 +6,6 @@ import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.mainModule
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
-import io.github.kinasr.playwright_demo_maven.utils.report.ReportStep
-import io.github.kinasr.playwright_demo_maven.utils.report_old.Report
-import io.github.kinasr.playwright_demo_maven.utils.report_old.model.LinkType
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.qameta.allure.Allure
 import io.qameta.allure.model.Status
@@ -21,13 +18,12 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import java.io.File
 import java.lang.Thread.sleep
-import java.util.UUID
+import java.util.*
 
 class Demo2Test : KoinTest {
 
     protected val browserManager: BrowserManager by inject()
     protected val screenshotHelper: ScreenshotHelper by inject()
-    private val report : Report by inject()
 //    val config: Config by inject()
 
     @Test
@@ -67,11 +63,9 @@ class Demo2Test : KoinTest {
 //        
 //        page1.locator("", Page.LocatorOptions())
 
-        
-        report.step("AAAAAAAAAA")
+
         val page = browser.newPage()
 
-        report.step("BBBBBBBBBBB")
         page.onLoad {
             print("000000000000000000000")
         }
@@ -79,10 +73,6 @@ class Demo2Test : KoinTest {
         page.navigate("https://playwright.dev/")
         page.waitForSelector("text=Get Started")
         page.click("text=Get Started")
-
-
-        report.addParameter("AAA", "BBB")
-        report.addLink("Google", "https://google.com/", LinkType.CUSTOM)
 
         sleep(10000)
         browser.close()
@@ -92,45 +82,45 @@ class Demo2Test : KoinTest {
     fun t002() {
         val logger = LoggerFactory.getLogger("AAAAA")
         println("00000000000")
-        
+
         logger.info("Hi Info -----")
         logger.trace("Hi Trace -----")
         logger.debug("Hi Debug -----")
         logger.info("Hi Info -----")
         logger.warn("Hi Warn -----")
         logger.error("Hi Error -----")
-        
-        
+
+
         val loggerK = KotlinLogging.logger("KKKKK")
         loggerK.error { "Hi Error from Kotlin -----" }
         MDC.put("tag", "MyTag");
         logger.info("This is a tagged message");
         MDC.remove("tag");
     }
-    
+
     @Test
     fun t003() {
         val uuid01 = UUID.randomUUID().toString()
         val uuid02 = UUID.randomUUID().toString()
-        
+
         val lifecycle = Allure.getLifecycle()
         val cUUID = lifecycle.currentTestCase.get()
-        
+
         lifecycle.startStep(uuid01, StepResult().apply {
             name = "AAA"
             status = Status.FAILED
-        }) 
-        
+        })
+
         lifecycle.startStep(uuid01, uuid02, StepResult().apply {
             name = "BBB"
             status = Status.FAILED
         })
-        
+
         lifecycle.stopStep(uuid01)
         lifecycle.stopStep(uuid02)
 
 
-        File("").bufferedReader().use {  }        
+        File("").bufferedReader().use { }
 //        lifecycle.scheduleTestCase(TestResult().apply { 
 //            uuid = uuid01
 //            name = "AAA"

@@ -1,4 +1,4 @@
-package io.github.kinasr.playwright_demo_maven.utils.report_old.model
+package io.github.kinasr.playwright_demo_maven.utils.report.model
 
 /**
  * Link types for test documentation

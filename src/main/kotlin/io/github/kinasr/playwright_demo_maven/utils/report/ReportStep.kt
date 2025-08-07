@@ -1,21 +1,30 @@
 package io.github.kinasr.playwright_demo_maven.utils.report
 
-import io.github.kinasr.playwright_demo_maven.utils.report_old.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
 import io.qameta.allure.AllureLifecycle
 import io.qameta.allure.model.Parameter
 import io.qameta.allure.model.Status
 import io.qameta.allure.model.StepResult
-import jdk.jfr.internal.consumer.EventLog.update
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.Closeable
+import java.util.*
 
 class ReportStep(private val uuid: String) : KoinComponent, Closeable {
     private val lifecycle by inject<AllureLifecycle>()
 
-    fun start(msg: String): ReportStep {
-        lifecycle.startStep(uuid, StepResult().setName(msg))
-        return this
+    companion object {
+        fun start(lifecycle: AllureLifecycle, name: String, parentUUID: String? = null): ReportStep {
+            val uuid = UUID.randomUUID().toString()
+
+            if (parentUUID != null) {
+                lifecycle.startStep(parentUUID, uuid, StepResult().setName(name))
+            } else {
+                lifecycle.startStep(uuid, StepResult().setName(name))
+            }
+
+            return ReportStep(uuid)
+        }
     }
 
     fun parameter(name: String, value: String): ReportStep {
@@ -27,7 +36,7 @@ class ReportStep(private val uuid: String) : KoinComponent, Closeable {
             )
         }
     }
-    
+
     fun attach(name: String, content: ByteArray, type: AttachmentType = AttachmentType.TEXT): ReportStep {
         lifecycle.addAttachment(
             name,
@@ -49,7 +58,7 @@ class ReportStep(private val uuid: String) : KoinComponent, Closeable {
         lifecycle.updateStep(uuid, result)
         return this
     }
-    
+
     fun passed(newName: String? = null) {
         updateStatus(Status.PASSED, newName)
         close()
@@ -70,8 +79,12 @@ class ReportStep(private val uuid: String) : KoinComponent, Closeable {
         close()
     }
 
+    fun step(name: String): ReportStep {
+        return start(lifecycle, name, uuid)
+    }
+
 
     override fun close() {
-        TODO("Not yet implemented")
+        lifecycle.stopStep(uuid)
     }
 }
