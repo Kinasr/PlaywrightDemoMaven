@@ -6,6 +6,7 @@ import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.mainModule
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
+import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.qameta.allure.Allure
 import io.qameta.allure.model.Status
@@ -24,6 +25,8 @@ class Demo2Test : KoinTest {
 
     protected val browserManager: BrowserManager by inject()
     protected val screenshotHelper: ScreenshotHelper by inject()
+    private val report: Report by inject()
+    
 //    val config: Config by inject()
 
     @Test
@@ -104,7 +107,6 @@ class Demo2Test : KoinTest {
         val uuid02 = UUID.randomUUID().toString()
 
         val lifecycle = Allure.getLifecycle()
-        val cUUID = lifecycle.currentTestCase.get()
 
         lifecycle.startStep(uuid01, StepResult().apply {
             name = "AAA"
@@ -119,8 +121,18 @@ class Demo2Test : KoinTest {
         lifecycle.stopStep(uuid01)
         lifecycle.stopStep(uuid02)
 
+        report.step("0000000000").use {
+            sleep(5000)
+            it.updateStatus(Status.PASSED)
+        }
+        
+        report.step("1111111111")
+            .passed()
 
-        File("").bufferedReader().use { }
+        report.step("9999999999").use {
+            sleep(5000)
+            it.updateStatus(Status.BROKEN)
+        }
 //        lifecycle.scheduleTestCase(TestResult().apply { 
 //            uuid = uuid01
 //            name = "AAA"

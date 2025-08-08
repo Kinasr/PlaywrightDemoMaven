@@ -11,6 +11,7 @@ import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.github.kinasr.playwright_demo_maven.utils.TestDataProvider
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
+import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -48,4 +49,6 @@ var logModule = module {
 
 val reportModule = module {
     single { Allure.getLifecycle() }
+    
+    single { Report() }
 }
