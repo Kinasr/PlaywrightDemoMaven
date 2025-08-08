@@ -14,6 +14,7 @@ class PlaywrightManager() {
         }
         
         TODO("Add option from config")
+//        playwright = Playwright.create(Playwright.CreateOptions())
     }
     
     @Synchronized

@@ -19,14 +19,14 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
     private val browserContext: ThreadLocal<BrowserContext> = ThreadLocal()
 
     @Synchronized
-    fun getBrowser(): Browser {
+    private fun getBrowser(): Browser {
         if (browser == null) {
             try {
                 browser = initBrowser()
                 logger.info { "Browser initialized: ${Config.Browser().name}" }
             } catch (e: Exception) {
                 logger.error { "Failed to initialize browser: ${e.message}" }
-                throw RuntimeException("Could not initialize browser", e)
+                throw e
             }
         }
         return browser!!
@@ -39,7 +39,7 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
                 logger.info { "New browser context created for thread: ${Thread.currentThread().name}" }
             } catch (e: Exception) {
                 logger.error { "Failed to create browser context: ${e.message}" }
-                throw RuntimeException("Could not create browser context", e)
+                throw e
             }
         }
         return browserContext.get()!!
@@ -60,36 +60,31 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
     }
 
     private fun browserOptions(): BrowserType.LaunchOptions {
-        return BrowserType.LaunchOptions().apply { 
+        return BrowserType.LaunchOptions().apply {
             headless = Config.Browser().headless
             slowMo = Config.Browser().slowMo
         }
     }
 
     fun close() {
-        try {
-            browserContext.get()?.let {
-                it.close()
-                logger.info { "Browser context closed for thread: ${Thread.currentThread().name}" }
-            }
-        } catch (e: Exception) {
-            logger.warn { "Error closing browser context: ${e.message}" }
-        } finally {
+        runCatching {
+            browserContext.get()?.close()
+        }.fold(
+            onSuccess = { logger.info { "Browser context closed for thread: ${Thread.currentThread().name}" } },
+            onFailure = { logger.warn { "Error closing browser context: ${it.message}" } }
+        ).also {
             browserContext.remove()
         }
     }
 
     @Synchronized
     fun quit() {
-        try {
-            close()
-            browser?.let {
-                it.close()
-                logger.info { "Browser closed." }
-            }
-        } catch (e: Exception) {
-            logger.warn { "Error closing browser: ${e.message}" }
-        } finally {
+        runCatching {
+            browser?.close()
+        }.fold(
+            onSuccess = { logger.info { "Browser closed." } },
+            onFailure = { logger.warn { "Error closing browser: ${it.message}" } }
+        ).also {
             browser = null
         }
     }

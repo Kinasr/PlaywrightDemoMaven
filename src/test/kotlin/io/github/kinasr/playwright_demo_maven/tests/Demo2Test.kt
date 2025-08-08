@@ -133,21 +133,5 @@ class Demo2Test : KoinTest {
             sleep(5000)
             it.updateStatus(Status.BROKEN)
         }
-//        lifecycle.scheduleTestCase(TestResult().apply { 
-//            uuid = uuid01
-//            name = "AAA"
-//            start = System.currentTimeMillis()
-//            status = Status.FAILED
-//        })
-//        lifecycle.startTestCase(uuid01)
-//
-//        sleep(5000)
-//        
-//        lifecycle.updateTestCase(uuid01) {
-//            it.stop = System.currentTimeMillis()
-//            it.status = Status.SKIPPED
-//        }
-//        lifecycle.stopTestCase(uuid01)
-//        lifecycle.writeTestCase(uuid01)
     }
 }

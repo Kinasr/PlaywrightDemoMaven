@@ -37,9 +37,11 @@ val mainModule = module {
 
 val playwrightModule = module {
     single<Playwright> { PlaywrightManager().initialize() }
-    factory<Page> { (contextOptions: Browser.NewContextOptions) ->
-        BrowserManager(get<Playwright>()).getContext(contextOptions).newPage()
-    }
+    
+    factory<BrowserManager> { BrowserManager(get<Playwright>()) }
+//    factory<Page> { (contextOptions: Browser.NewContextOptions) ->
+//        get<BrowserManager>().getContext(contextOptions).newPage()
+//    }
 }
 
 var logModule = module {
