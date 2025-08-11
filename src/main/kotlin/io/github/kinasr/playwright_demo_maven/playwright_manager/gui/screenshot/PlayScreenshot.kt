@@ -4,7 +4,6 @@ import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
-import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.timestamp
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -12,7 +11,6 @@ import java.time.ZonedDateTime
 
 class PlayScreenshot(
     private val logger: PlayLogger,
-    private val report: Report,
     private val directory: String
 ) : ScreenshotManager {
 
