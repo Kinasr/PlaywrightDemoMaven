@@ -83,16 +83,6 @@ class ReportStep private constructor(
         return this
     }
 
-    fun attach2(name: String, content: ByteArray, type: AttachmentType = AttachmentType.TEXT): ReportStep {
-        lifecycle.addAttachment(
-            name,
-            type.mimeType,
-            type.extension,
-            content.inputStream()
-        )
-        return this
-    }
-
     fun step(name: String): ReportStep {
         checkNotClosed()
         return start(lifecycle, logger, name, uuid)

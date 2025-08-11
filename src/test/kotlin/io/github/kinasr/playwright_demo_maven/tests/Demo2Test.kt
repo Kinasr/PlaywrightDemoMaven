@@ -76,6 +76,7 @@ class Demo2Test : KoinTest {
         page.navigate("https://playwright.dev/")
         page.waitForSelector("text=Get Started")
         page.click("text=Get Started")
+        page.locator("").click()
 
         sleep(10000)
         browser.close()

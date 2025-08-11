@@ -3,6 +3,7 @@ package io.github.kinasr.playwright_demo_maven.di
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
+import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
@@ -21,6 +22,9 @@ val mainModule = module {
     // Config
     single { ConfigLoader() }
     single<ConfigRecord>(named("config")) { get<ConfigLoader>().config }
+    single { Config.Browser() }
+    single { Config.App() }
+    single { Config.Test() }
 
     // Browser Management
 //    single { BrowserManager() }

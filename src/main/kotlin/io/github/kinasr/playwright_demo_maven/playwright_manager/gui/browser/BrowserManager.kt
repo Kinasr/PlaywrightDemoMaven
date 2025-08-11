@@ -13,6 +13,7 @@ import org.koin.core.qualifier.named
 
 class BrowserManager(private val playwright: Playwright) : KoinComponent {
     private val logger: PlayLogger by inject(named(LoggerName.PLAYWRIGHT))
+    private val browserConfig by inject<Config.Browser>()
 
     @Volatile
     private var browser: Browser? = null
@@ -48,7 +49,7 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
     private fun initBrowser(): Browser {
         val options = browserOptions()
         return try {
-            when (Config.Browser().name.lowercase()) {
+            when (browserConfig.name.lowercase()) {
                 "firefox" -> playwright.firefox().launch(options)
                 "webkit" -> playwright.webkit().launch(options)
                 else -> playwright.chromium().launch(options)
@@ -61,30 +62,33 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
 
     private fun browserOptions(): BrowserType.LaunchOptions {
         return BrowserType.LaunchOptions().apply {
-            headless = Config.Browser().headless
-            slowMo = Config.Browser().slowMo
+            headless = browserConfig.headless
+            slowMo = browserConfig.slowMo
         }
     }
 
     fun close() {
-        runCatching {
+        try {
             browserContext.get()?.close()
-        }.fold(
-            onSuccess = { logger.info { "Browser context closed for thread: ${Thread.currentThread().name}" } },
-            onFailure = { logger.warn { "Error closing browser context: ${it.message}" } }
-        ).also {
+            logger.info { "Browser context closed for thread: ${Thread.currentThread().name}" }
+        } catch (e: Exception) {
+            logger.error { "Error closing browser context: ${e.message}" }
+            throw e
+        } finally {
             browserContext.remove()
         }
     }
 
     @Synchronized
     fun quit() {
-        runCatching {
+        try {
+            close()
             browser?.close()
-        }.fold(
-            onSuccess = { logger.info { "Browser closed." } },
-            onFailure = { logger.warn { "Error closing browser: ${it.message}" } }
-        ).also {
+            logger.info { "Browser closed." }
+        } catch (e: Exception) {
+            logger.error { "Error closing browser: ${e.message}" }
+            throw e
+        } finally {
             browser = null
         }
     }
