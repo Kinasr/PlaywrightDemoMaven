@@ -2,9 +2,11 @@ package io.github.kinasr.playwright_demo_maven.tests
 
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.mainModule
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -17,7 +19,6 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
-import java.io.File
 import java.lang.Thread.sleep
 import java.util.*
 
@@ -77,6 +78,10 @@ class Demo2Test : KoinTest {
         page.waitForSelector("text=Get Started")
         page.click("text=Get Started")
         page.locator("").click()
+        page.locator("").isHidden
+        assertThat(page.locator("")).hasText("")
+        
+        
 
         sleep(10000)
         browser.close()
