@@ -30,9 +30,7 @@ class ValidationBuilder(
     fun assertAll() {
         val step = report.step("Assert all validations")
         validations.forEach { validation ->
-            val throwable = validation()
-
-            if (throwable != null) {
+            validation()?.let { throwable ->
                 logger.error { "Assertion failed: ${throwable.message}" }
                 step.failed()
                 throw throwable
@@ -45,20 +43,25 @@ class ValidationBuilder(
 
     fun verifyAll() {
         val step = report.step("Verify all validations")
-        var isPassed = true
-        
+        val failures = mutableListOf<Throwable>()
+
         validations.forEach { validation ->
-           isPassed = validation() == null && isPassed
+            validation()?.let {
+                failures.add(it)
+            }
         }
-        
-       if (isPassed) {
-           logger.info { "All verifications passed" }
-           step.passed()
-       } else {
-           logger.error { "Verification failed" }
-           step.failed()
-           throw AssertionFailedError("Verification failed")
-       }
+
+        if (failures.isNotEmpty()) {
+            val failureMessages = failures.joinToString(separator = "\n\t- ") { it.message ?: "Unknown verification error" }
+            val errorMessage = "Verification failed with ${failures.size} error(s):\n\t- $failureMessages"
+
+            logger.error { errorMessage }
+            step.failed("Verification failed")
+            throw AssertionFailedError(errorMessage)
+        } else {
+            logger.info { "All verifications passed" }
+            step.passed()
+        }
     }
 
     internal fun addValidation(validation: () -> Throwable?) {
