@@ -1,13 +1,13 @@
 package io.github.kinasr.playwright_demo_maven.di
 
-import com.microsoft.playwright.Browser
-import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.browser.BrowserManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.github.kinasr.playwright_demo_maven.utils.TestDataProvider
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
@@ -41,11 +41,15 @@ val mainModule = module {
 
 val playwrightModule = module {
     single<Playwright> { PlaywrightManager().initialize() }
-    
+
     factory<BrowserManager> { BrowserManager(get<Playwright>()) }
 //    factory<Page> { (contextOptions: Browser.NewContextOptions) ->
 //        get<BrowserManager>().getContext(contextOptions).newPage()
 //    }
+
+    single<ScreenshotManager> { 
+        PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/target/screenshots") 
+    }
 }
 
 var logModule = module {
@@ -55,6 +59,6 @@ var logModule = module {
 
 val reportModule = module {
     single { Allure.getLifecycle() }
-    
+
     single { Report() }
 }

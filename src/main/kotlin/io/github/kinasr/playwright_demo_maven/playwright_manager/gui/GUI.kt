@@ -1,8 +1,12 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.gui
 
 import com.microsoft.playwright.BrowserContext
+import com.microsoft.playwright.Locator
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.GUIElementAction
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
@@ -11,8 +15,15 @@ open class GUI(
     val logger: PlayLogger,
     val report: Report,
     val screenshot: ScreenshotManager,
-    val context: BrowserContext
+    val context: BrowserContext,
+    private val validationBuilder: ValidationBuilder
 ) {
+
+    fun element(element: GUIElementI) = GUIElementAction(this, element, validationBuilder)
+
+    fun element(locator: Locator): GUIElementAction {
+        return GUIElementAction(this, GUIElement(locator), validationBuilder)
+    }
 
     inline fun <T> performElementAction(
         actionName: String,
