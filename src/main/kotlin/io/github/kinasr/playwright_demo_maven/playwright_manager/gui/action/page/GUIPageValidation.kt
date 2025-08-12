@@ -5,7 +5,6 @@ import com.microsoft.playwright.assertions.PageAssertions
 import com.microsoft.playwright.assertions.PlaywrightAssertions
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.Validation
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
-import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
 
 class GUIPageValidation(
     builder: ValidationBuilder,
@@ -13,12 +12,12 @@ class GUIPageValidation(
 ) : Validation(builder) {
     override val and: ValidationBuilder = builder
     override val then: ValidationBuilder = builder
-    
+
     fun hasTitle(title: String, options: (PageAssertions.HasTitleOptions.() -> Unit) = { }): GUIPageValidation {
         builder.addValidation {
             builder.performValidation(
-                "Page title is '${HtmlStyle.title}'",
-                "Page title is not '${HtmlStyle.title}'"
+                "Page title is '${title}'",
+                "Page title is not '${title}'"
             ) {
                 val op = PageAssertions.HasTitleOptions().also { it.options() }
                 PlaywrightAssertions.assertThat(page).hasTitle(title, op)
@@ -26,7 +25,7 @@ class GUIPageValidation(
         }
         return this
     }
-    
+
     fun hasURL(url: String, options: (PageAssertions.HasURLOptions.() -> Unit) = { }): GUIPageValidation {
         builder.addValidation {
             builder.performValidation(

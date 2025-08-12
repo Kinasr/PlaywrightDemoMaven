@@ -8,8 +8,6 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManag
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
-import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
-import io.github.kinasr.playwright_demo_maven.utils.TestDataProvider
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
@@ -31,20 +29,34 @@ val configModule = module {
 }
 
 val playwrightModule = module {
-    single<Playwright> { PlaywrightManager().initialize{
-        this.env = get<Config.Playwright>().env
-    } }
+    single<Playwright> {
+        PlaywrightManager().initialize {
+            this.env = get<Config.Playwright>().env
+        }
+    }
 
-    factory<BrowserManager> { BrowserManager(get<Playwright>()) }
+    factory<BrowserManager> {
+        BrowserManager(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            browserConfig = get<Config.Browser>(),
+            playwright = get<Playwright>()
+        )
+    }
 
-    single<ScreenshotManager> { 
-        PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/target/screenshots") 
+    single<ScreenshotManager> {
+        PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/target/screenshots")
     }
 }
 
 var logModule = module {
-    single(named(LoggerName.REPORT)) { PlayLogger.get(LoggerName.REPORT) }
-    single(named(LoggerName.PLAYWRIGHT)) { PlayLogger.get(LoggerName.PLAYWRIGHT) }
+    single(named(LoggerName.REPORT)) { PlayLogger.get(
+        LoggerName.REPORT,
+        get<Config.Logging>()
+    ) }
+    single(named(LoggerName.PLAYWRIGHT)) { PlayLogger.get(
+        LoggerName.PLAYWRIGHT,
+        get<Config.Logging>()
+    ) }
 }
 
 val reportModule = module {

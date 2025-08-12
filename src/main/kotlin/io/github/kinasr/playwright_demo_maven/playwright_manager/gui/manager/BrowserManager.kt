@@ -12,9 +12,11 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
 
-class BrowserManager(private val playwright: Playwright) : KoinComponent {
-    private val logger: PlayLogger by inject(named(LoggerName.PLAYWRIGHT))
-    private val browserConfig by inject<Config.Browser>()
+class BrowserManager(
+    private val logger: PlayLogger,
+    private val browserConfig: Config.Browser,
+    private val playwright: Playwright
+) : KoinComponent {
 
     @Volatile
     private var browser: Browser? = null
@@ -25,7 +27,7 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
         if (browser == null) {
             try {
                 browser = initBrowser()
-                logger.info { "Browser initialized: ${Config.Browser().name}" }
+                logger.info { "Browser initialized: ${browserConfig.name}" }
             } catch (e: Exception) {
                 logger.error { "Failed to initialize browser: ${e.message}" }
                 throw e

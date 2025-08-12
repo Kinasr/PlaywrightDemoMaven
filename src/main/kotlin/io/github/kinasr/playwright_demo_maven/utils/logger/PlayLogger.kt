@@ -5,11 +5,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.slf4j.MDC
 
 class PlayLogger(
-    val name: String
+    val name: String,
+    val loggerConfig: Config.Logging
 ) {
     companion object {
-        fun get(name: String = "main"): PlayLogger {
-            return PlayLogger(name)
+        fun get(name: String = "main", loggerConfig: Config.Logging): PlayLogger {
+            return PlayLogger(name, loggerConfig)
         }
     }
 
@@ -28,7 +29,7 @@ class PlayLogger(
     }
 
     fun apiDebug(message: () -> Any?) {
-        if (Config.Logging().enableAPIDebug) {
+        if (loggerConfig.enableAPIDebug) {
             MDC.put("tag", "API-DEBUG")
             logger.debug(message)
             MDC.remove("tag")
@@ -36,7 +37,7 @@ class PlayLogger(
     }
 
     fun performance(message: () -> Any?) {
-        if (Config.Logging().enablePerformance) {
+        if (loggerConfig.enablePerformance) {
             MDC.put("tag", "PERFORMANCE")
             logger.info(message)
             MDC.remove("tag")

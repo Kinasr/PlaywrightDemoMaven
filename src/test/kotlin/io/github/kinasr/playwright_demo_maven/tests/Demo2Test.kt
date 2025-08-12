@@ -3,12 +3,9 @@ package io.github.kinasr.playwright_demo_maven.tests
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
-import io.github.kinasr.playwright_demo_maven.config.Config
-import io.github.kinasr.playwright_demo_maven.di.mainModule
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
-import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -16,7 +13,6 @@ import io.qameta.allure.Allure
 import io.qameta.allure.model.Status
 import io.qameta.allure.model.StepResult
 import org.junit.jupiter.api.Test
-import org.koin.core.context.startKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.slf4j.LoggerFactory
@@ -27,38 +23,15 @@ import java.util.*
 
 class Demo2Test : KoinTest {
 
-    private val logger : PlayLogger by inject()
+    private val logger: PlayLogger by inject()
     protected val browserManager: BrowserManager by inject()
-    protected val screenshotHelper: ScreenshotHelper by inject()
     private val report: Report by inject()
-    
+
 //    val config: Config by inject()
-
-    @Test
-    fun ttt() {
-        startKoin {
-            modules(mainModule)
-        }
-
-        browserManager.initializeBrowser()
-
-//        println("Hello World") 
-//        
-//        val playwright = Playwright.create()
-//        val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
-//        
-//        val page = browser.newPage()
-//        page.navigate("https://playwright.dev/")
-//        page.waitForSelector("text=Get Started")
-
-        sleep(10000)
-        browserManager.closeBrowser()
-    }
 
     @Test
     fun t001() {
         println("00000000000")
-        println(Config.Browser().name)
 //        Playwright.CreateOptions
         val playwright = Playwright.create()
         val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
@@ -96,8 +69,8 @@ class Demo2Test : KoinTest {
             .validate(page.locator("")).isVisible()
             .then
             .assert()
-        
-        
+
+
 
         sleep(10000)
         browser.close()
@@ -147,7 +120,7 @@ class Demo2Test : KoinTest {
             sleep(5000)
             it.updateStatus(Status.PASSED)
         }
-        
+
         report.step("1111111111")
             .passed()
 
