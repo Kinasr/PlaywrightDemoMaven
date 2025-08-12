@@ -1,4 +1,4 @@
-package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.browser
+package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager
 
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.BrowserContext

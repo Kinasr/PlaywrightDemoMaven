@@ -2,6 +2,7 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation
 
 import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Locator
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.element.GUIElementValidation
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager

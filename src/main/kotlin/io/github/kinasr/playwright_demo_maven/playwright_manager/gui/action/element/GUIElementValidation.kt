@@ -1,15 +1,17 @@
-package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation
+package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.element
 
 import com.microsoft.playwright.assertions.LocatorAssertions
-import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import com.microsoft.playwright.assertions.PlaywrightAssertions
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.Validation
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
 
 class GUIElementValidation(
-    private val builder: ValidationBuilder,
+    builder: ValidationBuilder,
     private val element: GUIElementI
-) {
-    val and = builder
-    val then = builder
+): Validation(builder) {
+    override val and = builder
+    override val then = builder
 
     fun hasText(text: String, options: (LocatorAssertions.HasTextOptions.() -> Unit) = { }): GUIElementValidation {
         builder.addValidation {
@@ -18,7 +20,7 @@ class GUIElementValidation(
                 "Element '${element.name}' does not have text '$text'"
             ) {
                 val op = LocatorAssertions.HasTextOptions().also { it.options() }
-                assertThat(element.locator).hasText(text, op)
+                PlaywrightAssertions.assertThat(element.locator).hasText(text, op)
             }
         }
 
@@ -32,7 +34,7 @@ class GUIElementValidation(
                 "Element '${element.name}' is not visible"
             ) {
                 val op = LocatorAssertions.IsVisibleOptions().also { it.options() }
-                assertThat(element.locator).isVisible(op)
+                PlaywrightAssertions.assertThat(element.locator).isVisible(op)
             }
         }
 

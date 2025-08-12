@@ -5,7 +5,7 @@ import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.browser.BrowserManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper

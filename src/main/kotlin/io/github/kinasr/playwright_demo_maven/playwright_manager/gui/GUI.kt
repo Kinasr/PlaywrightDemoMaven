@@ -2,7 +2,7 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui
 
 import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Locator
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.GUIElementAction
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.element.GUIElementAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
@@ -19,38 +19,34 @@ open class GUI(
     private val validationBuilder: ValidationBuilder
 ) {
 
-    fun element(element: GUIElementI) = GUIElementAction(this, element, validationBuilder)
+    fun element(element: GUIElementI) = GUIElementAction(this, validationBuilder, element)
 
     fun element(locator: Locator): GUIElementAction {
-        return GUIElementAction(this, GUIElement(locator), validationBuilder)
+        return GUIElementAction(this, validationBuilder, GUIElement(locator))
     }
 
-    inline fun <T> performElementAction(
-        actionName: String,
-        element: GUIElementI,
+    inline fun <T> performAction(
+        message: String,
+        failureMessage: String = message,
         takeScreenshotOnFailure: Boolean = true,
         action: () -> T
     ): T {
-        val singleOrPlural = if (element.isSingleElement) "element" else "elements"
-        logger.info {
-            "Performing action '$actionName' on $singleOrPlural by '${element.name}'"
-        }
-
-        val step = report.step("$actionName on $singleOrPlural by '${element.name}'")
+        logger.info { message }
+        val step = report.step(message)
+        
         return try {
             val result = action()
             step.passed()
             result
         } catch (e: Exception) {
             if (takeScreenshotOnFailure) {
-                screenshot.takeScreenshot(context, actionName)?.let { image ->
-                    step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
-                }
+                screenshot.takeScreenshot(context, message.replace(" ", "_"))
+                    ?.let { image ->
+                        step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
+                    }
             }
-            step.failed(
-                "Failed to '$actionName' on $singleOrPlural by '${element.name}'",
-                e.message
-            )
+            logger.error { "$failureMessage - with error: ${e.message}" }
+            step.failed(failureMessage, e.message)
             throw e
         }
     }
