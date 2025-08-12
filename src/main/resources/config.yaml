@@ -1,3 +1,6 @@
+playwright:
+  env:
+
 browser:
   # chromium, firefox, webkit
   name: "chromium"

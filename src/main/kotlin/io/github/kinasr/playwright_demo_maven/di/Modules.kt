@@ -18,34 +18,24 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val mainModule = module {
+}
 
-    // Config
-    single { ConfigLoader() }
-    single<ConfigRecord>(named("config")) { get<ConfigLoader>().config }
-    single { Config.Browser() }
-    single { Config.App() }
-    single { Config.Test() }
-
-    // Browser Management
-//    single { BrowserManager() }
-
-
-    // Page Objects
-//    factory { HomePage(get<BrowserManager>().getPage()!!) }
-//    factory { LoginPage(get<BrowserManager>().getPage()!!) }
-
-    // Utilities
-    single { TestDataProvider() }
-    single { ScreenshotHelper(get()) }
+val configModule = module {
+    single<ConfigRecord> { get<ConfigLoader>().config }
+    single { Config.Playwright(get<ConfigRecord>().playwright) }
+    single { Config.Browser(get<ConfigRecord>().browser) }
+    single { Config.App(get<ConfigRecord>().app) }
+    single { Config.Test(get<ConfigRecord>().test) }
+    single { Config.Allure(get<ConfigRecord>().allure) }
+    single { Config.Logging(get<ConfigRecord>().logging) }
 }
 
 val playwrightModule = module {
-    single<Playwright> { PlaywrightManager().initialize() }
+    single<Playwright> { PlaywrightManager().initialize{
+        this.env = get<Config.Playwright>().env
+    } }
 
     factory<BrowserManager> { BrowserManager(get<Playwright>()) }
-//    factory<Page> { (contextOptions: Browser.NewContextOptions) ->
-//        get<BrowserManager>().getContext(contextOptions).newPage()
-//    }
 
     single<ScreenshotManager> { 
         PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/target/screenshots") 
@@ -59,6 +49,5 @@ var logModule = module {
 
 val reportModule = module {
     single { Allure.getLifecycle() }
-
     single { Report() }
 }

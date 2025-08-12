@@ -1,11 +1,16 @@
 package io.github.kinasr.playwright_demo_maven.config
 
 data class ConfigRecord(
+    var playwright: PlaywrightConfig? = null,
     var browser: BrowserConfig? = null,
     var app: AppConfig? = null,
     var test: TestConfig? = null,
     var logging: LoggingConfig? = null,
     var allure: AllureConfig? = null
+)
+
+data class PlaywrightConfig(
+    var env: Map<String, String>? = null,
 )
 
 data class BrowserConfig(

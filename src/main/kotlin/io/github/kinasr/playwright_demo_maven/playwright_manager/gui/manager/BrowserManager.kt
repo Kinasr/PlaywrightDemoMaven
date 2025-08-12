@@ -5,6 +5,7 @@ import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.config.Config
+import io.github.kinasr.playwright_demo_maven.utils.exception.BrowserLaunchException
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import org.koin.core.component.KoinComponent
@@ -52,11 +53,15 @@ class BrowserManager(private val playwright: Playwright) : KoinComponent {
             when (browserConfig.name.lowercase()) {
                 "firefox" -> playwright.firefox().launch(options)
                 "webkit" -> playwright.webkit().launch(options)
-                else -> playwright.chromium().launch(options)
+                "chrome", "chromium" -> playwright.chromium().launch(browserOptions())
+                else -> {
+                    logger.warn { "Unknown browser '${browserConfig.name}', defaulting to Chromium" }
+                    playwright.chromium().launch(browserOptions())
+                }
             }
         } catch (e: Exception) {
-            logger.error { "Error launching browser: ${e.message}" }
-            throw e
+            logger.error { "Failed to launch ${browserConfig.name}: ${e.message}" }
+            throw BrowserLaunchException("Could not initialize ${browserConfig.name} browser", e)
         }
     }
 

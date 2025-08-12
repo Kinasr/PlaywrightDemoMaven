@@ -1,80 +1,79 @@
 package io.github.kinasr.playwright_demo_maven.config
 
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.qualifier.named
 
 open class Config() : KoinComponent {
-    protected val configuration: ConfigRecord by inject<ConfigRecord>(named("config"))
 
-    class Browser() : Config() {
-        
-        val browserConfig: BrowserConfig
-            get() = configuration.browser ?: throw Exception("Browser is not set")
+    class Playwright(private val playwrightConfig: PlaywrightConfig?) {
+        val env: Map<String, String>
+            get() = playwrightConfig?.env ?: mapOf()
+    }
+
+    class Browser(private val browserConfig: BrowserConfig?) {
 
         val name: String
-            get() = browserConfig.name ?: throw Exception("Browser name is not set")
+            get() = browserConfig?.name ?: "chromium"
 
         val headless: Boolean
-            get() = browserConfig.headless ?: false
+            get() = browserConfig?.headless ?: false
 
         val timeout: Double
-            get() = browserConfig.timeout ?: 30000.0
-        
+            get() = browserConfig?.timeout ?: 30000.0
+
         val slowMo: Double
-            get() = browserConfig.slowMo ?: 0.0
-        
+            get() = browserConfig?.slowMo ?: 0.0
+
         val devtools: Boolean
-            get() = browserConfig.devtools ?: false
-        
+            get() = browserConfig?.devtools ?: false
+
         val viewportWidth: Int
-            get() = browserConfig.viewport?.width ?: 1920
-        
+            get() = browserConfig?.viewport?.width ?: 1920
+
         val viewportHeight: Int
-            get() = browserConfig.viewport?.height ?: 1080
+            get() = browserConfig?.viewport?.height ?: 1080
     }
-    
-    class App() : Config() {
+
+    class App(private val appConfig: AppConfig?) {
         val baseUrl: String
-            get() = configuration.app?.baseUrl ?: throw Exception("App base URL is not set")
-        
+            get() = appConfig?.baseUrl ?: throw Exception("App base URL is not set")
+
         val appTimeout: Int
-            get() = configuration.app?.timeout ?: 30000
+            get() = appConfig?.timeout ?: 30000
     }
-    
-    class Test() : Config() {
+
+    class Test(private val testConfig: TestConfig?) : Config() {
         val parallel: Boolean
-            get() = configuration.test?.parallel ?: false
-                
+            get() = testConfig?.parallel ?: false
+
         val threads: Int
-            get() = configuration.test?.threads ?: 4
-        
+            get() = testConfig?.threads ?: 4
+
         val retries: Int
-            get() = configuration.test?.retries ?: 2
-        
+            get() = testConfig?.retries ?: 2
+
         val screenshots: Boolean
-            get() = configuration.test?.screenshots ?: false
-        
+            get() = testConfig?.screenshots ?: false
+
         val videos: Boolean
-            get() = configuration.test?.videos ?: false
-        
+            get() = testConfig?.videos ?: false
+
         val traces: Boolean
-            get() = configuration.test?.traces ?: false
+            get() = testConfig?.traces ?: false
     }
-    
-    class Logging() : Config() {
+
+    class Logging(private val loggingConfig: LoggingConfig?) {
         val level: String
-            get() = configuration.logging?.level ?: "INFO"
-        
+            get() = loggingConfig?.level ?: "INFO"
+
         val enablePerformance: Boolean
-            get() = configuration.logging?.enablePerformance ?: false
-        
+            get() = loggingConfig?.enablePerformance ?: false
+
         val enableAPIDebug: Boolean
-            get() = configuration.logging?.enableAPIDebug ?: false
+            get() = loggingConfig?.enableAPIDebug ?: false
     }
-    
-    class Allure() : Config() {
+
+    class Allure(private val allureConfig: AllureConfig?) : Config() {
         val resultsDirectory: String
-            get() = configuration.allure?.resultsDirectory ?: "target/allure-results"
+            get() = allureConfig?.resultsDirectory ?: "target/allure-results"
     }
 }

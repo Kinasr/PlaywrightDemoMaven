@@ -2,23 +2,21 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager
 
 import com.microsoft.playwright.Playwright
 
-class PlaywrightManager() {
+class PlaywrightManager(): AutoCloseable {
     @Volatile
     private var playwright: Playwright? = null 
     
     @Synchronized
-    fun initialize() : Playwright {
-        return playwright ?: run { 
-            playwright = Playwright.create()
+    fun initialize(options: (Playwright.CreateOptions.() -> Unit) = {}) : Playwright {
+        return playwright ?: run {
+            val op = Playwright.CreateOptions().also { it.options() }
+            playwright = Playwright.create(op)
             playwright!!
         }
-        
-        TODO("Add option from config")
-//        playwright = Playwright.create(Playwright.CreateOptions())
     }
     
     @Synchronized
-    fun close() {
+    override fun close() {
         playwright?.close()
         playwright = null
     }
