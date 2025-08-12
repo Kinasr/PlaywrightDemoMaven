@@ -6,8 +6,10 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.mainModule
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
+import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.qameta.allure.Allure
@@ -22,8 +24,10 @@ import org.slf4j.MDC
 import java.lang.Thread.sleep
 import java.util.*
 
+
 class Demo2Test : KoinTest {
 
+    private val logger : PlayLogger by inject()
     protected val browserManager: BrowserManager by inject()
     protected val screenshotHelper: ScreenshotHelper by inject()
     private val report: Report by inject()
@@ -80,6 +84,18 @@ class Demo2Test : KoinTest {
         page.locator("").click()
         page.locator("").isHidden
         assertThat(page.locator("")).hasText("")
+
+        val x = ValidationBuilder(
+            logger,
+            report,
+            PlayScreenshot(logger, ""),
+            browserManager.getContext()!!
+        )
+            .validate(page.locator("")).isVisible().hasText("")
+            .and
+            .validate(page.locator("")).isVisible()
+            .then
+            .assert()
         
         
 

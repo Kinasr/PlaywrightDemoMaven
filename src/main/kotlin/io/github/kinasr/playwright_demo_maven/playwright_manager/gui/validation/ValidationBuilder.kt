@@ -27,7 +27,7 @@ class ValidationBuilder(
         return GUIElementValidation(this, GUIElement(locator))
     }
 
-    fun assertAll() {
+    fun assert() {
         val step = report.step("Assert all validations")
         validations.forEach { validation ->
             validation()?.let { throwable ->
@@ -41,7 +41,7 @@ class ValidationBuilder(
         step.passed()
     }
 
-    fun verifyAll() {
+    fun verify() {
         val step = report.step("Verify all validations")
         val failures = mutableListOf<Throwable>()
 
