@@ -32,7 +32,7 @@ class ValidationBuilder(
         val step = report.step("Assert all validations")
         validations.forEach { validation ->
             validation()?.let { throwable ->
-                logger.error { "Assertion failed: ${throwable.message}" }
+                logger.error { "Assertion failed" }
                 step.failed()
                 throw throwable
             }
@@ -53,8 +53,7 @@ class ValidationBuilder(
         }
 
         if (failures.isNotEmpty()) {
-            val failureMessages = failures.joinToString(separator = "\n\t- ") { it.message ?: "Unknown verification error" }
-            val errorMessage = "Verification failed with ${failures.size} error(s):\n\t- $failureMessages"
+            val errorMessage = "Verification failed with ${failures.size} error(s)"
 
             logger.error { errorMessage }
             step.failed("Verification failed")
@@ -75,7 +74,7 @@ class ValidationBuilder(
         takeScreenshotOnFailure: Boolean = true,
         operation: () -> Unit
     ): Throwable? {
-        val step = report.step("")
+        val step = report.step(message)
 
         return runCatching(operation)
             .fold(

@@ -54,7 +54,7 @@ class ReportStep private constructor(
         checkNotClosed()
 
         return update {
-            it.parameters.add(
+            this.parameters.add(
                 Parameter()
                     .setName(name)
                     .setValue(value?.toString() ?: "null")
@@ -90,16 +90,16 @@ class ReportStep private constructor(
 
     fun updateStatus(status: Status, newName: String? = null): ReportStep {
         return update {
-            if (newName != null) it.name = newName
-            it.status = status
+            if (newName != null) this.name = newName
+            this.status = status
         }
     }
 
-    fun update(result: (StepResult) -> Unit): ReportStep {
+    fun update(result: (StepResult.() -> Unit)): ReportStep {
         checkNotClosed()
 
         runCatching {
-            lifecycle.updateStep(uuid, result)
+            lifecycle.updateStep(uuid) { it.result() }
         }.onFailure {
             logger.warn { "Failed to update step '${this.name}': ${it.message}" }
         }
@@ -115,18 +115,18 @@ class ReportStep private constructor(
         check(!isClosed) { "Step '$name' is already closed" }
     }
 
-    private fun finishStep(status: Status, newName: String? = null, statusDetails: String? = null) {
+    private fun finishStep(status: Status, newName: String?, statusDetails: String? = null) {
         if (isClosed) {
             logger.warn { "Attempt to finish already closed step: '$name'" }
             return
         }
 
         update {
-            if (newName != null) it.name = newName
-            it.status = status
-            it.stop = System.currentTimeMillis()
+            if (newName != null) this.name = newName
+            this.status = status
+            this.stop = System.currentTimeMillis()
             if (statusDetails != null) {
-                it.statusDetails = io.qameta.allure.model.StatusDetails()
+                this.statusDetails = io.qameta.allure.model.StatusDetails()
                     .setMessage(statusDetails)
                 logger.trace { "Added status details to step '${this.name}': $statusDetails" }
             }
@@ -138,7 +138,7 @@ class ReportStep private constructor(
         if (!isClosed) {
             runCatching {
                 lifecycle.stopStep(uuid)
-                logger.trace{"Step '$name' stopped successfully"}
+                logger.trace { "Step '$name' stopped successfully" }
             }.onFailure {
                 logger.warn { "Failed to stop step '$name': ${it.message}" }
             }
