@@ -45,7 +45,7 @@ class ReportStep private constructor(
                 logger.warn { "Failed to start step '$name': ${it.message}" }
             }
 
-            return ReportStep(uuid, name)
+            return ReportStep(name, uuid)
         }
     }
 

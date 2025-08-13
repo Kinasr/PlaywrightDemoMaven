@@ -19,8 +19,22 @@ class GUIElementValidation(
                 "Element '${element.name}' has text '$text'",
                 "Element '${element.name}' does not have text '$text'"
             ) {
-                val op = LocatorAssertions.HasTextOptions().also { it.options() }
+                val op = LocatorAssertions.HasTextOptions().apply(options)
                 PlaywrightAssertions.assertThat(element.locator).hasText(text, op)
+            }
+        }
+
+        return this
+    }
+
+    fun containsText(text: String, options: (LocatorAssertions.ContainsTextOptions.() -> Unit) = { }): GUIElementValidation {
+        builder.addValidation {
+            builder.performValidation(
+                "Element '${element.name}' has text '$text'",
+                "Element '${element.name}' does not have text '$text'"
+            ) {
+                val op = LocatorAssertions.ContainsTextOptions().apply(options)
+                PlaywrightAssertions.assertThat(element.locator).containsText(text, op)
             }
         }
 
@@ -33,7 +47,7 @@ class GUIElementValidation(
                 "Element '${element.name}' is visible",
                 "Element '${element.name}' is not visible"
             ) {
-                val op = LocatorAssertions.IsVisibleOptions().also { it.options() }
+                val op = LocatorAssertions.IsVisibleOptions().apply(options)
                 PlaywrightAssertions.assertThat(element.locator).isVisible(op)
             }
         }

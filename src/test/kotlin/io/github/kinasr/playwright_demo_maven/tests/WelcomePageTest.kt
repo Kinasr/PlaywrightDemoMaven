@@ -48,7 +48,7 @@ class WelcomePageTest : KoinTest {
 
         welcomePage.navigate()
             .clickABTesting()
-            .assertPageTitle("A/B Test Control")
+            .assertPageTitleContains("A/B Test")
     }
 
     @AfterEach

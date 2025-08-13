@@ -17,7 +17,7 @@ class GUIElementAction(
             message = "Clicking on element '${element.name}'",
             failureMessage = "Failed to click on element '${element.name}'"
         ) {
-            val op = Locator.ClickOptions().also { it.options() }
+            val op = Locator.ClickOptions().apply(options)
             element.locator.click(op)
         }
         return this
@@ -28,7 +28,7 @@ class GUIElementAction(
             message = "Filling text '$text' in element '${element.name}'",
             failureMessage = "Failed to fill text '$text' in element '${element.name}'"
         ) {
-            val op = Locator.FillOptions().also { it.options() }
+            val op = Locator.FillOptions().apply(options)
             element.locator.fill(text, op)
         }
         return this

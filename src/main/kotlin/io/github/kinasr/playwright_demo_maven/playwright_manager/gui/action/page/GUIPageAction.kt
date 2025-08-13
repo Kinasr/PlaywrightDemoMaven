@@ -3,7 +3,6 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.pag
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
-import jdk.internal.joptsimple.internal.Messages.message
 
 class GUIPageAction(
     private val gui: GUI,
@@ -22,11 +21,11 @@ class GUIPageAction(
         }
         return this
     }
-    
+
     fun get(): GUIPageGetter {
         return GUIPageGetter(gui, page)
     }
-    
+
     fun validate(): GUIPageValidation {
         return GUIPageValidation(validationBuilder, page)
     }

@@ -19,7 +19,7 @@ class GUIPageValidation(
                 "Page title is '${title}'",
                 "Page title is not '${title}'"
             ) {
-                val op = PageAssertions.HasTitleOptions().also { it.options() }
+                val op = PageAssertions.HasTitleOptions().apply(options)
                 PlaywrightAssertions.assertThat(page).hasTitle(title, op)
             }
         }
@@ -32,7 +32,7 @@ class GUIPageValidation(
                 "Page URL is '$url'",
                 "Page URL is not '$url'"
             ) {
-                val op = PageAssertions.HasURLOptions().also { it.options() }
+                val op = PageAssertions.HasURLOptions().apply(options)
                 PlaywrightAssertions.assertThat(page).hasURL(url, op)
             }
         }

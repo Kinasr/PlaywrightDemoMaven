@@ -77,7 +77,7 @@ val playwrightModule = module {
     }
 
     single<ScreenshotManager> {
-        PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/target/screenshots")
+        PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/screenshots")
     }
 
     scope(named(PlaywrightTestScope.TEST_SCOPE)) {

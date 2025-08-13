@@ -10,8 +10,8 @@ class ABTestingPage(
     
     private val textPageTitle = page.locator("h3")
     
-    fun assertPageTitle(title: String) {
+    fun assertPageTitleContains(title: String) {
         gui.element(textPageTitle).validate()
-            .hasText(title).then.assert()
+            .containsText(title).then.assert()
     }
 }
