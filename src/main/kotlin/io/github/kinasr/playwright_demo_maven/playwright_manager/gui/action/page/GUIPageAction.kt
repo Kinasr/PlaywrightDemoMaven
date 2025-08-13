@@ -22,4 +22,12 @@ class GUIPageAction(
         }
         return this
     }
+    
+    fun get(): GUIPageGetter {
+        return GUIPageGetter(gui, page)
+    }
+    
+    fun validate(): GUIPageValidation {
+        return GUIPageValidation(validationBuilder, page)
+    }
 }
