@@ -23,21 +23,17 @@ class WelcomePageTest : KoinTest {
 
     @BeforeEach
     fun setup() {
-        // Create the test scope
         testScope = getKoin().createScope(
             "test_${UUID.randomUUID()}",
             named(PlaywrightTestScope.TEST_SCOPE)
         )
 
-        // Get browser manager (this is factory scoped, so it's available globally)
         browser = get()
-
         val context = browser.context {
             this.baseURL = appConfig.baseUrl
         }
         page = context.newPage()
 
-        // Declare the context and page in the test scope so scoped dependencies can access them
         testScope.declare(context, allowOverride = true)
         testScope.declare(page, allowOverride = true)
     }
@@ -53,7 +49,7 @@ class WelcomePageTest : KoinTest {
 
     @AfterEach
     fun tearDown() {
-        browser.quit()
+        browser.close()
         testScope.close()
     }
 }

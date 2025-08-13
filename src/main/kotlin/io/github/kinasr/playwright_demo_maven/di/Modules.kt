@@ -62,8 +62,10 @@ val reportModule = module {
 }
 
 val playwrightModule = module {
+    single { PlaywrightManager(get<PlayLogger>(named(LoggerName.PLAYWRIGHT))) }
+    
     single<Playwright> {
-        PlaywrightManager().initialize {
+        get<PlaywrightManager>().initialize {
             this.env = get<Config.Playwright>().env
         }
     }
