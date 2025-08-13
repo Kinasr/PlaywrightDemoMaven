@@ -1,13 +1,16 @@
 package io.github.kinasr.playwright_demo_maven.di
 
+import com.microsoft.playwright.Browser
 import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
@@ -15,10 +18,8 @@ import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val mainModule = module {
-}
-
 val configModule = module {
+    single<ConfigLoader> { ConfigLoader() }
     single<ConfigRecord> { get<ConfigLoader>().config }
     single { Config.Playwright(get<ConfigRecord>().playwright) }
     single { Config.Browser(get<ConfigRecord>().browser) }
@@ -28,38 +29,75 @@ val configModule = module {
     single { Config.Logging(get<ConfigRecord>().logging) }
 }
 
+var logModule = module {
+    single(named(LoggerName.REPORT)) {
+        PlayLogger.get(
+            LoggerName.REPORT,
+            get<Config.Logging>()
+        )
+    }
+    single(named(LoggerName.PLAYWRIGHT)) {
+        PlayLogger.get(
+            LoggerName.PLAYWRIGHT,
+            get<Config.Logging>()
+        )
+    }
+
+    single(named(LoggerName.VALIDATION)) {
+        PlayLogger.get(
+            LoggerName.VALIDATION,
+            get<Config.Logging>()
+        )
+    }
+}
+
+val reportModule = module {
+    single { Allure.getLifecycle() }
+    single { Report() }
+}
+
 val playwrightModule = module {
     single<Playwright> {
         PlaywrightManager().initialize {
             this.env = get<Config.Playwright>().env
         }
     }
+    
 
-    factory<BrowserManager> {
+    factory<BrowserManager> { (contextOptions: Browser.NewContextOptions) ->
         BrowserManager(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
             browserConfig = get<Config.Browser>(),
             playwright = get<Playwright>()
-        )
+        ) {
+            contextOptions
+        }
     }
 
     single<ScreenshotManager> {
         PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/target/screenshots")
     }
+
+    single<GUI> {
+        GUI(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            report = get<Report>(),
+            screenshot = get<ScreenshotManager>(),
+            context = get<BrowserManager>().context(),
+            validationBuilder = get<ValidationBuilder>()
+        )
+    }
+    
+//    factory<ValidationBuilder> {
+//        ValidationBuilder(
+//            logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
+//            report = get<Report>(),
+//            screenshot = get<ScreenshotManager>(),
+//            context = get<BrowserManager>().context()
+//        )
+//    }
 }
 
-var logModule = module {
-    single(named(LoggerName.REPORT)) { PlayLogger.get(
-        LoggerName.REPORT,
-        get<Config.Logging>()
-    ) }
-    single(named(LoggerName.PLAYWRIGHT)) { PlayLogger.get(
-        LoggerName.PLAYWRIGHT,
-        get<Config.Logging>()
-    ) }
-}
-
-val reportModule = module {
-    single { Allure.getLifecycle() }
-    single { Report() }
+val mainModule = module {
+    includes(configModule, playwrightModule, logModule, reportModule)
 }

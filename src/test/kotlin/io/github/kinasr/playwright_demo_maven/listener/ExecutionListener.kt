@@ -1,5 +1,6 @@
 package io.github.kinasr.playwright_demo_maven.listener
 
+import io.github.kinasr.playwright_demo_maven.di.configModule
 import io.github.kinasr.playwright_demo_maven.di.logModule
 import io.github.kinasr.playwright_demo_maven.di.mainModule
 import io.github.kinasr.playwright_demo_maven.di.playwrightModule
@@ -15,7 +16,7 @@ class ExecutionListener : KoinComponent, TestExecutionListener {
 
     override fun testPlanExecutionStarted(testPlan: TestPlan?) {
         startKoin {
-            modules(mainModule, playwrightModule, logModule, reportModule)
+            modules(mainModule)
         }
     }
 }

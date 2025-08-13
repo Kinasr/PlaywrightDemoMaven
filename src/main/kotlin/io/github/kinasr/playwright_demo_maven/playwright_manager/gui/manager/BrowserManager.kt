@@ -6,16 +6,14 @@ import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.utils.exception.BrowserLaunchException
-import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.qualifier.named
 
 class BrowserManager(
     private val logger: PlayLogger,
     private val browserConfig: Config.Browser,
-    private val playwright: Playwright
+    private val playwright: Playwright,
+    private val contextOptions: (Browser.NewContextOptions.() -> Unit) = { }
 ) : KoinComponent {
 
     @Volatile
@@ -36,10 +34,11 @@ class BrowserManager(
         return browser!!
     }
 
-    fun getContext(options: Browser.NewContextOptions = Browser.NewContextOptions()): BrowserContext {
+    fun context(): BrowserContext {
         if (browserContext.get() == null) {
             try {
-                browserContext.set(getBrowser().newContext(options))
+                val op = Browser.NewContextOptions().also { it.contextOptions() }
+                browserContext.set(getBrowser().newContext(op))
                 logger.info { "New browser context created for thread: ${Thread.currentThread().name}" }
             } catch (e: Exception) {
                 logger.error { "Failed to create browser context: ${e.message}" }

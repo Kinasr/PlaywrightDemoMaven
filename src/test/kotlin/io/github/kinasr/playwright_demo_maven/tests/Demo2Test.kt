@@ -1,8 +1,10 @@
 package io.github.kinasr.playwright_demo_maven.tests
 
+import com.microsoft.playwright.Browser
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
@@ -13,6 +15,7 @@ import io.qameta.allure.Allure
 import io.qameta.allure.model.Status
 import io.qameta.allure.model.StepResult
 import org.junit.jupiter.api.Test
+import org.koin.core.parameter.parametersOf
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.slf4j.LoggerFactory
@@ -62,7 +65,7 @@ class Demo2Test : KoinTest {
             logger,
             report,
             PlayScreenshot(logger, ""),
-            browserManager.getContext()!!
+            browserManager.context()!!
         )
             .validate(page.locator("")).isVisible().hasText("")
             .and
@@ -128,5 +131,22 @@ class Demo2Test : KoinTest {
             sleep(5000)
             it.updateStatus(Status.BROKEN)
         }
+    }
+
+    @Test
+    fun t004() {
+        val browserManager: BrowserManager by inject(parameters = {
+            parametersOf(
+                Browser.NewContextOptions().apply {
+                    acceptDownloads = true
+                }
+            )
+        })
+        val gui: GUI by inject()
+
+        val page = browserManager.context().newPage()
+
+        page.navigate("https://playwright.dev/")
+        
     }
 }
