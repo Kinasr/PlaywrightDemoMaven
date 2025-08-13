@@ -1,10 +1,14 @@
 package io.github.kinasr.playwright_demo_maven.di
 
-import com.microsoft.playwright.Browser
+import com.microsoft.playwright.BrowserContext
+import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
+import com.sun.tools.javac.main.Option
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
+import io.github.kinasr.playwright_demo_maven.pages.ABTestingPage
+import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
@@ -18,6 +22,7 @@ import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
+// Define the test scope qualifier
 val configModule = module {
     single<ConfigLoader> { ConfigLoader() }
     single<ConfigRecord> { get<ConfigLoader>().config }
@@ -62,42 +67,52 @@ val playwrightModule = module {
             this.env = get<Config.Playwright>().env
         }
     }
-    
 
-    factory<BrowserManager> { (contextOptions: Browser.NewContextOptions) ->
+    factory<BrowserManager> {
         BrowserManager(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-            browserConfig = get<Config.Browser>(),
-            playwright = get<Playwright>()
-        ) {
-            contextOptions
-        }
+            browserConfig = get(),
+            playwright = get()
+        )
     }
 
     single<ScreenshotManager> {
         PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/target/screenshots")
     }
 
-    single<GUI> {
-        GUI(
-            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-            report = get<Report>(),
-            screenshot = get<ScreenshotManager>(),
-            context = get<BrowserManager>().context(),
-            validationBuilder = get<ValidationBuilder>()
-        )
+    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
+        scoped<BrowserContext> { get() }
+        scoped<Page> { get() }
+
+        scoped<ValidationBuilder> {
+            ValidationBuilder(
+                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
+                report = get<Report>(),
+                screenshot = get<ScreenshotManager>(),
+                context = get()
+            )
+        }
+
+        scoped<GUI> {
+            GUI(
+                logger = get(named(LoggerName.PLAYWRIGHT)),
+                report = get(),
+                screenshot = get(),
+                context = get(),
+                validationBuilder = get()
+            )
+        }
     }
-    
-//    factory<ValidationBuilder> {
-//        ValidationBuilder(
-//            logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
-//            report = get<Report>(),
-//            screenshot = get<ScreenshotManager>(),
-//            context = get<BrowserManager>().context()
-//        )
-//    }
+
+}
+
+val pagesModule = module {
+    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
+        scoped { WelcomePage(get(), get()) }
+        scoped { ABTestingPage(get(), get()) }
+    }
 }
 
 val mainModule = module {
-    includes(configModule, playwrightModule, logModule, reportModule)
+    includes(configModule, playwrightModule, logModule, reportModule, pagesModule)
 }

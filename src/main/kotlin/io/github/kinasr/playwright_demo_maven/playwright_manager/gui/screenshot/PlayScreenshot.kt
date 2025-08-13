@@ -1,5 +1,6 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot
 
+import com.microsoft.playwright.Browser
 import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
@@ -26,6 +27,10 @@ class PlayScreenshot(
             logger.warn { "Failed to take screenshot: ${e.message}" }
             null
         }
+    }
+    
+    fun x(browser: Browser) {
+        browser.contexts().firstOrNull()?.pages()?.firstOrNull()?.screenshot()
     }
 
     override fun takeElementScreenshot(element: Locator, actionName: String): ByteArray? {

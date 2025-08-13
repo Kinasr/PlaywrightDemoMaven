@@ -12,8 +12,7 @@ import org.koin.core.component.KoinComponent
 class BrowserManager(
     private val logger: PlayLogger,
     private val browserConfig: Config.Browser,
-    private val playwright: Playwright,
-    private val contextOptions: (Browser.NewContextOptions.() -> Unit) = { }
+    private val playwright: Playwright
 ) : KoinComponent {
 
     @Volatile
@@ -21,7 +20,7 @@ class BrowserManager(
     private val browserContext: ThreadLocal<BrowserContext> = ThreadLocal()
 
     @Synchronized
-    private fun getBrowser(): Browser {
+    fun browser(): Browser {
         if (browser == null) {
             try {
                 browser = initBrowser()
@@ -34,11 +33,11 @@ class BrowserManager(
         return browser!!
     }
 
-    fun context(): BrowserContext {
+    fun context(options: (Browser.NewContextOptions.() -> Unit) = {}): BrowserContext {
         if (browserContext.get() == null) {
             try {
-                val op = Browser.NewContextOptions().also { it.contextOptions() }
-                browserContext.set(getBrowser().newContext(op))
+                val op = Browser.NewContextOptions().apply(options)
+                browserContext.set(browser().newContext(op))
                 logger.info { "New browser context created for thread: ${Thread.currentThread().name}" }
             } catch (e: Exception) {
                 logger.error { "Failed to create browser context: ${e.message}" }
