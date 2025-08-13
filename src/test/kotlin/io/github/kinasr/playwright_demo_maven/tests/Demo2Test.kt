@@ -1,59 +1,40 @@
 package io.github.kinasr.playwright_demo_maven.tests
 
+import com.microsoft.playwright.Browser
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
-import io.github.kinasr.playwright_demo_maven.browser.BrowserManager
-import io.github.kinasr.playwright_demo_maven.config.Config
-import io.github.kinasr.playwright_demo_maven.di.mainModule
-import io.github.kinasr.playwright_demo_maven.utils.ScreenshotHelper
+import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.qameta.allure.Allure
 import io.qameta.allure.model.Status
 import io.qameta.allure.model.StepResult
 import org.junit.jupiter.api.Test
-import org.koin.core.context.startKoin
+import org.koin.core.parameter.parametersOf
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
-import java.io.File
 import java.lang.Thread.sleep
 import java.util.*
 
+
 class Demo2Test : KoinTest {
 
+    private val logger: PlayLogger by inject()
     protected val browserManager: BrowserManager by inject()
-    protected val screenshotHelper: ScreenshotHelper by inject()
     private val report: Report by inject()
-    
+
 //    val config: Config by inject()
-
-    @Test
-    fun ttt() {
-        startKoin {
-            modules(mainModule)
-        }
-
-        browserManager.initializeBrowser()
-
-//        println("Hello World") 
-//        
-//        val playwright = Playwright.create()
-//        val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
-//        
-//        val page = browser.newPage()
-//        page.navigate("https://playwright.dev/")
-//        page.waitForSelector("text=Get Started")
-
-        sleep(10000)
-        browserManager.closeBrowser()
-    }
 
     @Test
     fun t001() {
         println("00000000000")
-        println(Config.Browser().name)
 //        Playwright.CreateOptions
         val playwright = Playwright.create()
         val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
@@ -76,6 +57,23 @@ class Demo2Test : KoinTest {
         page.navigate("https://playwright.dev/")
         page.waitForSelector("text=Get Started")
         page.click("text=Get Started")
+        page.locator("").click()
+        page.locator("").isHidden
+        assertThat(page.locator("")).hasText("")
+
+        val x = ValidationBuilder(
+            logger,
+            report,
+            PlayScreenshot(logger, ""),
+            browserManager.context()!!
+        )
+            .validate(page.locator("")).isVisible().hasText("")
+            .and
+            .validate(page.locator("")).isVisible()
+            .then
+            .assert()
+
+
 
         sleep(10000)
         browser.close()
@@ -125,7 +123,7 @@ class Demo2Test : KoinTest {
             sleep(5000)
             it.updateStatus(Status.PASSED)
         }
-        
+
         report.step("1111111111")
             .passed()
 
@@ -133,21 +131,22 @@ class Demo2Test : KoinTest {
             sleep(5000)
             it.updateStatus(Status.BROKEN)
         }
-//        lifecycle.scheduleTestCase(TestResult().apply { 
-//            uuid = uuid01
-//            name = "AAA"
-//            start = System.currentTimeMillis()
-//            status = Status.FAILED
-//        })
-//        lifecycle.startTestCase(uuid01)
-//
-//        sleep(5000)
-//        
-//        lifecycle.updateTestCase(uuid01) {
-//            it.stop = System.currentTimeMillis()
-//            it.status = Status.SKIPPED
-//        }
-//        lifecycle.stopTestCase(uuid01)
-//        lifecycle.writeTestCase(uuid01)
+    }
+
+    @Test
+    fun t004() {
+        val browserManager: BrowserManager by inject(parameters = {
+            parametersOf(
+                Browser.NewContextOptions().apply {
+                    acceptDownloads = true
+                }
+            )
+        })
+        val gui: GUI by inject()
+
+        val page = browserManager.context().newPage()
+
+        page.navigate("https://playwright.dev/")
+        
     }
 }

@@ -1,3 +1,6 @@
+playwright:
+  env:
+
 browser:
   # chromium, firefox, webkit
   name: "chromium"
@@ -10,7 +13,7 @@ browser:
     height: 1080
     
 app:
-  baseUrl: "https://example.com"
+  baseUrl: "https://the-internet.herokuapp.com/"
   timeout: 30000
   
 test:
