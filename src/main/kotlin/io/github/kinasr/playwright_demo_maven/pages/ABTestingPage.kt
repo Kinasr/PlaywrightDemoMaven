@@ -12,6 +12,6 @@ class ABTestingPage(
     
     fun assertPageTitleContains(title: String) {
         gui.element(textPageTitle).validate()
-            .containsText(title).then.verify()
+            .containsText(title).then.assert()
     }
 }
