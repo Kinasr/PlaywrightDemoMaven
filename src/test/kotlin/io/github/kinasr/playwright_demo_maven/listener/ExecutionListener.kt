@@ -19,7 +19,7 @@ class ExecutionListener : KoinComponent, TestExecutionListener {
     }
 
     override fun testPlanExecutionFinished(testPlan: TestPlan?) {
-        get<BrowserManager>().clearBrowserPool()
+        get<BrowserManager>().close()
         get<PlaywrightManager>().close()
         stopKoin()
     }
