@@ -1,13 +1,15 @@
 package io.github.kinasr.playwright_demo_maven.tests
 
+import com.microsoft.playwright.Browser
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.PlaywrightTestScope
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.test.KoinTest
@@ -18,7 +20,7 @@ import java.util.*
 class WelcomePageTest : KoinTest {
     private val appConfig: Config.App by inject()
     private lateinit var testScope: Scope
-    private lateinit var browser: BrowserManager
+    private lateinit var browserContext: BrowserContextManager
     private lateinit var page: Page
 
     @BeforeEach
@@ -28,10 +30,15 @@ class WelcomePageTest : KoinTest {
             named(PlaywrightTestScope.TEST_SCOPE)
         )
 
-        browser = get()
-        val context = browser.context {
-            this.baseURL = appConfig.baseUrl
+        browserContext = get<BrowserContextManager> {
+            parametersOf(
+                Browser.NewContextOptions().apply {
+                    this.baseURL = appConfig.baseUrl
+                }
+            )
         }
+
+        val context = browserContext.context()
         page = context.newPage()
 
         testScope.declare(context, allowOverride = true)
@@ -49,7 +56,7 @@ class WelcomePageTest : KoinTest {
 
     @AfterEach
     fun tearDown() {
-        browser.close()
+        browserContext.close()
         testScope.close()
     }
 }
