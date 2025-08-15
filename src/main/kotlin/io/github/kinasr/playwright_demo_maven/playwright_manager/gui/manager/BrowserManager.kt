@@ -1,50 +1,48 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager
 
 import com.microsoft.playwright.Browser
-import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.utils.exception.BrowserLaunchException
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import org.koin.core.component.KoinComponent
+import java.io.Closeable
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 class BrowserManager(
     private val logger: PlayLogger,
     private val browserConfig: Config.Browser,
     private val playwright: Playwright
-) : KoinComponent {
+) : KoinComponent, Closeable {
 
-    @Volatile
-    private var browser: Browser? = null
-    private val browserContext: ThreadLocal<BrowserContext> = ThreadLocal()
+    private val browserPool: ConcurrentMap<Long, Browser> = ConcurrentHashMap()
 
-    @Synchronized
     fun browser(): Browser {
-        if (browser == null) {
-            try {
-                browser = initBrowser()
-                logger.info { "Browser initialized: ${browserConfig.name}" }
-            } catch (e: Exception) {
-                logger.error { "Failed to initialize browser: ${e.message}" }
-                throw e
-            }
-        }
-        return browser!!
-    }
+        val thr = Thread.currentThread()
+        val currentThreadId = thr.threadId()
 
-    fun context(options: (Browser.NewContextOptions.() -> Unit) = {}): BrowserContext {
-        if (browserContext.get() == null) {
-            try {
-                val op = Browser.NewContextOptions().apply(options)
-                browserContext.set(browser().newContext(op))
-                logger.info { "New browser context created for thread: ${Thread.currentThread().name}" }
-            } catch (e: Exception) {
-                logger.error { "Failed to create browser context: ${e.message}" }
-                throw e
+        return browserPool.compute(currentThreadId) { _, browser ->
+            browser?.let { b ->
+                if (b.isConnected) browser
+                else {
+                    runCatching { closeBrowser(currentThreadId, b) }
+                        .onFailure { logger.warn { "Error closing unhealthy browser for thread ${thr.name}: ${it.message}" } }
+                    null
+                }
+
+            } ?: run {
+                logger.debug { "Initializing browser for thread: ${thr.name} (ID: $currentThreadId)" }
+                runCatching { initBrowser() }
+                    .onSuccess { logger.info { "Browser initialized: ${browserConfig.name} for thread: ${thr.name}" } }
+                    .onFailure { e ->
+                        logger.error { "Failed to initialize browser: ${e.message} for thread: ${thr.name}" }
+                        throw e
+                    }
+                    .getOrNull()
             }
-        }
-        return browserContext.get()!!
+        }!!
     }
 
     private fun initBrowser(): Browser {
@@ -53,10 +51,10 @@ class BrowserManager(
             when (browserConfig.name.lowercase()) {
                 "firefox" -> playwright.firefox().launch(options)
                 "webkit" -> playwright.webkit().launch(options)
-                "chrome", "chromium" -> playwright.chromium().launch(browserOptions())
+                "chrome", "chromium" -> playwright.chromium().launch(options)
                 else -> {
                     logger.warn { "Unknown browser '${browserConfig.name}', defaulting to Chromium" }
-                    playwright.chromium().launch(browserOptions())
+                    playwright.chromium().launch(options)
                 }
             }
         } catch (e: Exception) {
@@ -72,29 +70,22 @@ class BrowserManager(
         }
     }
 
-    fun close() {
-        try {
-            browserContext.get()?.close()
-            logger.info { "Browser context closed for thread: ${Thread.currentThread().name}" }
-        } catch (e: Exception) {
-            logger.error { "Error closing browser context: ${e.message}" }
-            throw e
-        } finally {
-            browserContext.remove()
+    @Synchronized
+    fun clearBrowserPool() {
+        logger.info { "Clearing browser pool." }
+        browserPool.forEach { browser ->
+            closeBrowser(browser.key, browser.value)
         }
+        browserPool.clear()
     }
 
-    @Synchronized
-    fun quit() {
-        try {
-            close()
-            browser?.close()
-            logger.info { "Browser closed." }
-        } catch (e: Exception) {
-            logger.error { "Error closing browser: ${e.message}" }
-            throw e
-        } finally {
-            browser = null
-        }
+    private fun closeBrowser(threadId: Long, browser: Browser) {
+        runCatching { browser.close() }
+            .onSuccess { logger.trace { "Browser closed for thread id: $threadId" } }
+            .onFailure { logger.warn { "Error closing browser for thread id: $threadId: ${it.message}" } }
+    }
+
+    override fun close() {
+        clearBrowserPool()
     }
 }
