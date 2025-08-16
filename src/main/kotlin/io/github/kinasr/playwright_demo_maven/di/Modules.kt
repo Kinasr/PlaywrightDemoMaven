@@ -1,15 +1,13 @@
 package io.github.kinasr.playwright_demo_maven.di
 
-import com.microsoft.playwright.Browser
-import com.microsoft.playwright.BrowserContext
-import com.microsoft.playwright.Page
-import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.*
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
 import io.github.kinasr.playwright_demo_maven.pages.ABTestingPage
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.APIRequestManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
@@ -82,12 +80,25 @@ val playwrightModule = module {
     single<ScreenshotManager> {
         PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/screenshots")
     }
+
+    factory { (options: Browser.NewContextOptions) ->
+        BrowserContextManager(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            browser = get<BrowserManager>().browser(),
+            contextOptions = options
+        )
+    }
     
-    factory { (options: Browser.NewContextOptions) -> BrowserContextManager(
-        logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-        browser = get<BrowserManager>().browser(),
-        contextOptions = options
-     )}
+    factory<APIRequestManager> { params ->
+        val context = params.getOrNull<APIRequest.NewContextOptions>()
+        
+        APIRequestManager(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            playwright = get(),
+            appConfig = get(),
+            contextOptions = context
+        )
+    }
 
     scope(named(PlaywrightTestScope.TEST_SCOPE)) {
         scoped<BrowserContextManager> { get() }
