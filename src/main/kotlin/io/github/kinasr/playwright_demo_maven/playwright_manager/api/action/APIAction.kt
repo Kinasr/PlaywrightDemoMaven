@@ -48,6 +48,7 @@ class APIAction(
             }.onSuccess {
                 logger.info { "Request sent successfully with status code: ${it.statusCode}" }
                 step.parameter("Status Code", it.status)
+                step.attach("Response", it.text.toByteArray(), AttachmentType.JSON)
                 step.passed()
             }.onFailure {
                 logger.error { "Request failed with error: ${it.message}" }

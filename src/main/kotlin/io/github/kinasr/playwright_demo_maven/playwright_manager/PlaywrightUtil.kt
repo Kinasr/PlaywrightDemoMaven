@@ -12,7 +12,7 @@ fun <T> APIResponse.result(type: Class<T>, jsonParser: Gson): APIResult<T> {
         parseError = e.message
         null
     }
-    return APIResult (
+    return APIResult(
         statusCode = this.status(),
         status = this.statusText(),
         url = this.url(),

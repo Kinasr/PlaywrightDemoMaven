@@ -21,7 +21,7 @@ api:
   maxRetries: 0
     
 app:
-  baseUrl: "https://the-internet.herokuapp.com/"
+  baseUrl: "https://the-internet.herokuapp.com"
   timeout: 30000
   
 test:

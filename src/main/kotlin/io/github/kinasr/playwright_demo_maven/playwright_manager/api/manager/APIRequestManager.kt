@@ -4,6 +4,7 @@ import com.microsoft.playwright.APIRequest
 import com.microsoft.playwright.APIRequestContext
 import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.config.Config
+import io.github.kinasr.playwright_demo_maven.utils.ifNull
 import io.github.kinasr.playwright_demo_maven.utils.ifNullOrBlank
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import java.io.Closeable
@@ -15,10 +16,11 @@ class APIRequestManager(
     private val contextOptions: APIRequest.NewContextOptions
 ) : Closeable {
     val request: APIRequestContext
-    val baseURL = contextOptions.baseURL!!
-    
+    var baseURL: String
+
     init {
         contextOptions()
+        baseURL = contextOptions.baseURL
         request = runCatching { playwright.request().newContext(contextOptions) }
             .onSuccess { logger.info { "New API request context created." } }
             .onFailure {
@@ -27,13 +29,13 @@ class APIRequestManager(
             }
             .getOrThrow()
     }
-    
+
     private fun contextOptions(): APIRequest.NewContextOptions {
         return contextOptions.apply {
-            baseURL.ifNullOrBlank { config.app.baseUrl }
-            timeout = config.api.timeout
-            extraHTTPHeaders = config.api.headers
-            maxRedirects = config.api.maxRedirects
+            this.baseURL = this.baseURL.ifNullOrBlank { config.app.baseUrl }
+            this.timeout = this.timeout.ifNull { config.api.timeout }
+            this.extraHTTPHeaders = this.extraHTTPHeaders.ifNull { config.api.headers }
+            this.maxRedirects = this.maxRedirects.ifNull { config.api.maxRedirects }
         }
     }
 

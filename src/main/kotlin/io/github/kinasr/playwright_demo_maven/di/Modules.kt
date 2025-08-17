@@ -1,5 +1,6 @@
 package io.github.kinasr.playwright_demo_maven.di
 
+import com.google.gson.GsonBuilder
 import com.microsoft.playwright.*
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
@@ -7,6 +8,7 @@ import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
 import io.github.kinasr.playwright_demo_maven.pages.ABTestingPage
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.action.APIAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.APIRequestManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
@@ -55,6 +57,10 @@ val reportModule = module {
     single { Report() }
 }
 
+val utilsModule = module {
+    single { GsonBuilder().create() }
+}
+
 val playwrightModule = module {
     single { PlaywrightManager(get<PlayLogger>(named(LoggerName.PLAYWRIGHT))) }
 
@@ -63,7 +69,9 @@ val playwrightModule = module {
             this.env = get<Config>().playwright.env
         }
     }
+}
 
+val guiModule = module {
     factory<BrowserManager> {
         BrowserManager(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
@@ -81,17 +89,6 @@ val playwrightModule = module {
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
             browser = get<BrowserManager>().browser(),
             contextOptions = options
-        )
-    }
-
-    factory<APIRequestManager> { params ->
-        val context = params.getOrNull<APIRequest.NewContextOptions>() ?: APIRequest.NewContextOptions()
-
-        APIRequestManager(
-            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-            playwright = get(),
-            config = get(),
-            contextOptions = context
         )
     }
 
@@ -119,7 +116,30 @@ val playwrightModule = module {
             )
         }
     }
+}
 
+val apiModule = module {
+    factory<APIRequestManager> { params ->
+        val context = params.getOrNull<APIRequest.NewContextOptions>() ?: APIRequest.NewContextOptions()
+
+        APIRequestManager(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            playwright = get(),
+            config = get(),
+            contextOptions = context
+        )
+    }
+
+    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
+        scoped<APIRequestManager> { get() }
+        factory { APIAction(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            report = get(),
+            config =  get(),
+            requestManager = get(),
+            jsonConverter = get()
+        ) }
+    }
 }
 
 val pagesModule = module {
@@ -130,5 +150,5 @@ val pagesModule = module {
 }
 
 val mainModule = module {
-    includes(configModule, playwrightModule, logModule, reportModule, pagesModule)
+    includes(configModule, utilsModule, playwrightModule, guiModule, apiModule, logModule, reportModule, pagesModule)
 }
