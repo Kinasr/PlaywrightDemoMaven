@@ -88,10 +88,10 @@ val playwrightModule = module {
             contextOptions = options
         )
     }
-    
+
     factory<APIRequestManager> { params ->
-        val context = params.getOrNull<APIRequest.NewContextOptions>()
-        
+        val context = params.getOrNull<APIRequest.NewContextOptions>() ?: APIRequest.NewContextOptions()
+
         APIRequestManager(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
             playwright = get(),

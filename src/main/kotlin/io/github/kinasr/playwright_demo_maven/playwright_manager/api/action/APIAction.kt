@@ -1,0 +1,112 @@
+package io.github.kinasr.playwright_demo_maven.playwright_manager.api.action
+
+import com.google.gson.Gson
+import com.microsoft.playwright.options.RequestOptions
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.APIMethod
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.APIResult
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.APIRequestManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.result
+import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
+import io.github.kinasr.playwright_demo_maven.utils.report.Report
+import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
+
+open class APIAction(
+    protected val logger: PlayLogger,
+    protected val report: Report,
+    protected val requestManager: APIRequestManager,
+    protected val jsonConverter: Gson
+) {
+
+    fun <T> send(
+        method: APIMethod,
+        endpoint: String,
+        bodyType: Class<T>,
+        options: (RequestOptions.() -> Unit) = {}
+    ): APIResult<T> {
+        requestManager.use { manager ->
+            val contextOptions = RequestOptions.create().apply {
+                options()
+                this.setMethod(method.str)
+            }
+
+            val logMessage = "Sending request to: ${method.str}: ${manager.baseURL}$endpoint"
+            logger.info { logMessage }
+            logger.apiDebug { "Request options: $contextOptions" }
+            val step = report.step(logMessage)
+                .attach(
+                    "Request",
+                    contextOptions.toString().toByteArray(),
+                    AttachmentType.JSON
+                )
+
+            return runCatching {
+                manager.request.fetch(endpoint, contextOptions)
+                    .result(bodyType, jsonConverter)
+            }.onSuccess {
+                logger.info { "Request sent successfully with status code: ${it.statusCode}" }
+                step.parameter("Status Code", it.status)
+                step.passed()
+            }.onFailure {
+                logger.error { "Request failed with error: ${it.message}" }
+                step.failed("Request failed", it.message)
+                throw it
+            }.getOrThrow()
+        }
+    }
+
+    fun send(
+        method: APIMethod,
+        endpoint: String,
+        options: (RequestOptions.() -> Unit) = {}
+    ): APIResult<String> {
+        return send(method, endpoint, String::class.java, options)
+    }
+    
+    fun get(endpoint: String, bodyType: Class<String>, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return send(APIMethod.GET, endpoint, bodyType, options)
+    }
+    
+    fun get(endpoint: String, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return get(endpoint, String::class.java, options)
+    }
+    
+    fun post(endpoint: String, bodyType: Class<String>, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return send(APIMethod.POST, endpoint, bodyType, options)
+    }
+    
+    fun post(endpoint: String, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return post(endpoint, String::class.java, options)
+    }   
+    
+    fun put(endpoint: String, bodyType: Class<String>, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return send(APIMethod.PUT, endpoint, bodyType, options)
+    }
+    
+    fun put(endpoint: String, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return put(endpoint, String::class.java, options)
+    }   
+    
+    fun delete(endpoint: String, bodyType: Class<String>, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return send(APIMethod.DELETE, endpoint, bodyType, options)
+    }
+    
+    fun delete(endpoint: String, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return delete(endpoint, String::class.java, options)
+    }
+    
+    fun patch(endpoint: String, bodyType: Class<String>, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return send(APIMethod.PATCH, endpoint, bodyType, options)
+    }
+    
+    fun patch(endpoint: String, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return patch(endpoint, String::class.java, options)
+    }
+    
+    fun head(endpoint: String, bodyType: Class<String>, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return send(APIMethod.HEAD, endpoint, bodyType, options)
+    }
+    
+    fun head(endpoint: String, options: (RequestOptions.() -> Unit) = {}): APIResult<String> {
+        return head(endpoint, String::class.java, options)
+    }
+}

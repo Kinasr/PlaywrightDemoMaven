@@ -12,12 +12,14 @@ class APIRequestManager(
     private val logger: PlayLogger,
     private val appConfig: Config.App,
     private val playwright: Playwright,
-    private val contextOptions: APIRequest.NewContextOptions? = null
+    private val contextOptions: APIRequest.NewContextOptions
 ) : Closeable {
     val request: APIRequestContext
+    val baseURL = contextOptions.baseURL!!
     
     init {
-        request = runCatching { playwright.request().newContext(contextOptions()) }
+        contextOptions()
+        request = runCatching { playwright.request().newContext(contextOptions) }
             .onSuccess { logger.info { "New API request context created." } }
             .onFailure {
                 logger.error { "Failed to create API request context: ${it.message}" }
@@ -27,8 +29,7 @@ class APIRequestManager(
     }
     
     private fun contextOptions(): APIRequest.NewContextOptions {
-        val options = contextOptions ?: APIRequest.NewContextOptions()
-        return options.apply {
+        return contextOptions.apply {
             baseURL.ifNullOrBlank { appConfig.baseUrl }
         }
     }
