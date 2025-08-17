@@ -18,7 +18,7 @@ import org.koin.test.inject
 import java.util.*
 
 class WelcomePageTest : KoinTest {
-    private val appConfig: Config.App by inject()
+    private val config: Config by inject()
     private lateinit var testScope: Scope
     private lateinit var browserContext: BrowserContextManager
     private lateinit var page: Page
@@ -33,7 +33,7 @@ class WelcomePageTest : KoinTest {
         browserContext = get<BrowserContextManager> {
             parametersOf(
                 Browser.NewContextOptions().apply {
-                    this.baseURL = appConfig.baseUrl
+                    this.baseURL = config.app.baseUrl
                 }
             )
         }

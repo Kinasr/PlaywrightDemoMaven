@@ -2,19 +2,21 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.api.action
 
 import com.google.gson.Gson
 import com.microsoft.playwright.options.RequestOptions
-import io.github.kinasr.playwright_demo_maven.playwright_manager.api.APIMethod
-import io.github.kinasr.playwright_demo_maven.playwright_manager.api.APIResult
+import io.github.kinasr.playwright_demo_maven.config.Config
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.model.APIMethod
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.model.APIResult
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.APIRequestManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.result
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
 
-open class APIAction(
-    protected val logger: PlayLogger,
-    protected val report: Report,
-    protected val requestManager: APIRequestManager,
-    protected val jsonConverter: Gson
+class APIAction(
+    private val logger: PlayLogger,
+    private val report: Report,
+    private val config: Config,
+    private val requestManager: APIRequestManager,
+    private val jsonConverter: Gson
 ) {
 
     fun <T> send(
@@ -27,6 +29,7 @@ open class APIAction(
             val contextOptions = RequestOptions.create().apply {
                 options()
                 this.setMethod(method.str)
+                this.setMaxRetries(config.api.maxRetries)
             }
 
             val logMessage = "Sending request to: ${method.str}: ${manager.baseURL}$endpoint"

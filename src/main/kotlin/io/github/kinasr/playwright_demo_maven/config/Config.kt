@@ -1,79 +1,216 @@
 package io.github.kinasr.playwright_demo_maven.config
 
-import org.koin.core.component.KoinComponent
-
-open class Config() : KoinComponent {
-
-    class Playwright(private val playwrightConfig: PlaywrightConfig?) {
-        val env: Map<String, String>
-            get() = playwrightConfig?.env ?: mapOf()
+open class Config(
+    protected val config: ConfigRecord
+) {
+    val playwright: PlaywrightConfig by lazy {
+        PlaywrightConfig(config)
     }
 
-    class Browser(private val browserConfig: BrowserConfig?) {
-
-        val name: String
-            get() = browserConfig?.name ?: "chromium"
-
-        val headless: Boolean
-            get() = browserConfig?.headless ?: false
-
-        val timeout: Double
-            get() = browserConfig?.timeout ?: 30000.0
-
-        val slowMo: Double
-            get() = browserConfig?.slowMo ?: 0.0
-
-        val devtools: Boolean
-            get() = browserConfig?.devtools ?: false
-
-        val viewportWidth: Int
-            get() = browserConfig?.viewport?.width ?: 1920
-
-        val viewportHeight: Int
-            get() = browserConfig?.viewport?.height ?: 1080
+    val browser: BrowserConfig by lazy {
+        BrowserConfig(config)
     }
 
-    class App(private val appConfig: AppConfig?) {
-        val baseUrl: String
-            get() = appConfig?.baseUrl ?: throw Exception("App base URL is not set")
-
-        val appTimeout: Int
-            get() = appConfig?.timeout ?: 30000
+    val api: APIConfig by lazy {
+        APIConfig(config)
     }
 
-    class Test(private val testConfig: TestConfig?) : Config() {
-        val parallel: Boolean
-            get() = testConfig?.parallel ?: false
-
-        val threads: Int
-            get() = testConfig?.threads ?: 4
-
-        val retries: Int
-            get() = testConfig?.retries ?: 2
-
-        val screenshots: Boolean
-            get() = testConfig?.screenshots ?: false
-
-        val videos: Boolean
-            get() = testConfig?.videos ?: false
-
-        val traces: Boolean
-            get() = testConfig?.traces ?: false
+    val app: AppConfig by lazy {
+        AppConfig(config)
     }
 
-    class Logging(private val loggingConfig: LoggingConfig?) {
-        val level: String
-            get() = loggingConfig?.level ?: "INFO"
-
-        val enablePerformance: Boolean
-            get() = loggingConfig?.enablePerformance ?: false
-
-        val enableAPIDebug: Boolean
-            get() = loggingConfig?.enableAPIDebug ?: false
+    val test: TestConfig by lazy {
+        TestConfig(config)
     }
 
-    class Allure(private val allureConfig: AllureConfig?) : Config() {
-        val resultsDirectory: String
-            get() = allureConfig?.resultsDirectory ?: "target/allure-results"
+    val logging: LoggingConfig by lazy {
+        LoggingConfig(config)
+    }
+
+    val allure: AllureConfig by lazy {
+        AllureConfig(config)
+    }
+
+    class PlaywrightConfig internal constructor(config: ConfigRecord) {
+        val env: Map<String, String> by lazy {
+            config.playwright?.env ?: emptyMap()
+        }
+    }
+
+    class BrowserConfig internal constructor(config: ConfigRecord) {
+
+        val name: String by lazy {
+            getEnvOrDefault(
+                "BROWSER_NAME",
+                config.browser?.name,
+                "chromium"
+            )
+        }
+
+        val headless: Boolean by lazy {
+            getEnvOrDefault(
+                "BROWSER_HEADLESS",
+                config.browser?.headless,
+                false
+            )
+        }
+
+        val slowMo: Double by lazy {
+            getEnvOrDefault(
+                "BROWSER_SLOW_MO",
+                config.browser?.slowMo,
+                0.0
+            )
+        }
+
+        val devtools: Boolean by lazy {
+            getEnvOrDefault(
+                "BROWSER_DEVTOOLS",
+                config.browser?.devtools,
+                false
+            )
+        }
+
+        val viewportWidth: Int by lazy {
+            getEnvOrDefault(
+                "BROWSER_VIEWPORT_WIDTH",
+                config.browser?.viewport?.width,
+                1920
+            )
+        }
+
+        val viewportHeight: Int by lazy {
+            getEnvOrDefault(
+                "BROWSER_VIEWPORT_HEIGHT",
+                config.browser?.viewport?.height,
+                1080
+            )
+        }
+    }
+
+    class APIConfig internal constructor(config: ConfigRecord) {
+        val headers: Map<String, String> by lazy {
+            config.api?.headers ?: emptyMap()
+        }
+
+        val timeout: Double by lazy {
+            getEnvOrDefault(
+                "API_TIMEOUT",
+                config.api?.timeout,
+                30000.0
+            )
+        }
+
+        val maxRedirects: Int by lazy {
+            getEnvOrDefault(
+                "API_MAX_REDIRECTS",
+                config.api?.maxRedirects,
+                5
+            )
+        }
+
+        val maxRetries: Int by lazy {
+            getEnvOrDefault(
+                "API_MAX_RETRIES",
+                config.api?.maxRetries,
+                0
+            )
+        }
+    }
+
+    class AppConfig internal constructor(config: ConfigRecord) {
+        val baseUrl: String by lazy {
+            getEnvOrDefault(
+                "APP_BASE_URL",
+                config.app?.baseUrl,
+                "https://the-internet.herokuapp.com/"
+            )
+        }
+    }
+
+    class TestConfig internal constructor(config: ConfigRecord) {
+        val parallel: Boolean by lazy {
+            getEnvOrDefault(
+                "TEST_PARALLEL",
+                config.test?.parallel,
+                true
+            )
+        }
+
+        val threads: Int by lazy {
+            getEnvOrDefault(
+                "TEST_THREADS",
+                config.test?.threads,
+                4
+            )
+        }
+
+        val retries: Int by lazy {
+            getEnvOrDefault(
+                "TEST_RETRIES",
+                config.test?.retries,
+                2
+            )
+        }
+
+        val screenshots: Boolean by lazy {
+            getEnvOrDefault(
+                "TEST_SCREENSHOT",
+                config.test?.screenshots,
+                true
+            )
+        }
+
+        val videos: Boolean by lazy {
+            getEnvOrDefault(
+                "TEST_VIDEO",
+                config.test?.videos,
+                true
+            )
+        }
+
+        val traces: Boolean by lazy {
+            getEnvOrDefault(
+                "TEST_TRACES",
+                config.test?.traces,
+                true
+            )
+        }
+    }
+
+    class LoggingConfig internal constructor(config: ConfigRecord) {
+        val level: String by lazy {
+            getEnvOrDefault(
+                "LOGGING_LEVEL",
+                config.logging?.level,
+                "INFO"
+            )
+        }
+
+        val enablePerformance: Boolean by lazy {
+            getEnvOrDefault(
+                "LOGGING_ENABLE_PERFORMANCE",
+                config.logging?.enablePerformance,
+                false
+            )
+        }
+
+        val enableAPIDebug: Boolean by lazy {
+            getEnvOrDefault(
+                "LOGGING_ENABLE_API_DEBUG",
+                config.logging?.enableAPIDebug,
+                false
+            )
+        }
+    }
+
+    class AllureConfig internal constructor(config: ConfigRecord) {
+        val directory: String by lazy {
+            getEnvOrDefault(
+                "ALLURE_DIRECTORY",
+                config.allure?.resultsDirectory,
+                "/allure-results"
+            )
+        }
     }
 }

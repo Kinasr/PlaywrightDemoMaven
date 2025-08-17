@@ -10,7 +10,7 @@ import java.io.Closeable
 
 class APIRequestManager(
     private val logger: PlayLogger,
-    private val appConfig: Config.App,
+    private val config: Config,
     private val playwright: Playwright,
     private val contextOptions: APIRequest.NewContextOptions
 ) : Closeable {
@@ -30,7 +30,10 @@ class APIRequestManager(
     
     private fun contextOptions(): APIRequest.NewContextOptions {
         return contextOptions.apply {
-            baseURL.ifNullOrBlank { appConfig.baseUrl }
+            baseURL.ifNullOrBlank { config.app.baseUrl }
+            timeout = config.api.timeout
+            extraHTTPHeaders = config.api.headers
+            maxRedirects = config.api.maxRedirects
         }
     }
 

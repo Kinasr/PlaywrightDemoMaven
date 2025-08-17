@@ -1,4 +1,4 @@
-package io.github.kinasr.playwright_demo_maven.playwright_manager.api
+package io.github.kinasr.playwright_demo_maven.playwright_manager.api.model
 
 data class APIResult<T>(
     val statusCode: Int,

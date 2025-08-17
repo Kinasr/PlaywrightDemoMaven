@@ -3,6 +3,7 @@ package io.github.kinasr.playwright_demo_maven.config
 data class ConfigRecord(
     var playwright: PlaywrightConfig? = null,
     var browser: BrowserConfig? = null,
+    var api: ApiConfig? = null,
     var app: AppConfig? = null,
     var test: TestConfig? = null,
     var logging: LoggingConfig? = null,
@@ -20,6 +21,13 @@ data class BrowserConfig(
     var slowMo: Double? = null,
     var devtools: Boolean? = null,
     var viewport: ViewPortConfig? = null
+)
+
+data class ApiConfig(
+    var headers: Map<String, String>? = null,
+    var timeout: Double? = null,
+    var maxRedirects: Int? = null,
+    var maxRetries: Int? = null
 )
 
 data class ViewPortConfig(

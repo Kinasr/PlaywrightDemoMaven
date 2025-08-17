@@ -25,32 +25,27 @@ import org.koin.dsl.module
 val configModule = module {
     single<ConfigLoader> { ConfigLoader() }
     single<ConfigRecord> { get<ConfigLoader>().config }
-    single { Config.Playwright(get<ConfigRecord>().playwright) }
-    single { Config.Browser(get<ConfigRecord>().browser) }
-    single { Config.App(get<ConfigRecord>().app) }
-    single { Config.Test(get<ConfigRecord>().test) }
-    single { Config.Allure(get<ConfigRecord>().allure) }
-    single { Config.Logging(get<ConfigRecord>().logging) }
+    single { Config(get()) }
 }
 
 var logModule = module {
     single(named(LoggerName.REPORT)) {
         PlayLogger.get(
             LoggerName.REPORT,
-            get<Config.Logging>()
+            get()
         )
     }
     single(named(LoggerName.PLAYWRIGHT)) {
         PlayLogger.get(
             LoggerName.PLAYWRIGHT,
-            get<Config.Logging>()
+            get()
         )
     }
 
     single(named(LoggerName.VALIDATION)) {
         PlayLogger.get(
             LoggerName.VALIDATION,
-            get<Config.Logging>()
+            get()
         )
     }
 }
@@ -65,14 +60,14 @@ val playwrightModule = module {
 
     single<Playwright> {
         get<PlaywrightManager>().initialize {
-            this.env = get<Config.Playwright>().env
+            this.env = get<Config>().playwright.env
         }
     }
 
     factory<BrowserManager> {
         BrowserManager(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-            browserConfig = get(),
+            config = get(),
             playwright = get()
         )
     }
@@ -95,7 +90,7 @@ val playwrightModule = module {
         APIRequestManager(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
             playwright = get(),
-            appConfig = get(),
+            config = get(),
             contextOptions = context
         )
     }

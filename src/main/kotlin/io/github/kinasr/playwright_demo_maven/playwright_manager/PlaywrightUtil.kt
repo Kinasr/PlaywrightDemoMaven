@@ -2,7 +2,7 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager
 
 import com.google.gson.Gson
 import com.microsoft.playwright.APIResponse
-import io.github.kinasr.playwright_demo_maven.playwright_manager.api.APIResult
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.model.APIResult
 
 fun <T> APIResponse.result(type: Class<T>, jsonParser: Gson): APIResult<T> {
     var parseError: String? = null
