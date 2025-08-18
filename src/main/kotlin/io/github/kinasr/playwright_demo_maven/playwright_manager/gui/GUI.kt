@@ -8,7 +8,7 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.page
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType

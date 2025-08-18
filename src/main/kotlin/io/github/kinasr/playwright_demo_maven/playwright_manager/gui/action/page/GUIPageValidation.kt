@@ -3,8 +3,8 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.pag
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PageAssertions
 import com.microsoft.playwright.assertions.PlaywrightAssertions
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.Validation
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.Validation
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 
 class GUIPageValidation(
     builder: ValidationBuilder,

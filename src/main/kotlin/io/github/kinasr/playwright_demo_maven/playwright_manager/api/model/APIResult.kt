@@ -1,5 +1,8 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.api.model
 
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.validation.APIValidation
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
+
 data class APIResult<T>(
     val statusCode: Int,
     val status: String,
@@ -7,6 +10,7 @@ data class APIResult<T>(
     val headers: Map<String, String>,
     val body: T?,
     val text: String,
+    val validationBuilder: ValidationBuilder,
     val parseError: String? = null
 ) {
     val isSuccess = statusCode in 200..299
@@ -19,5 +23,8 @@ data class APIResult<T>(
     fun isJson(): Boolean = contentType?.contains("application/json", ignoreCase = true) == true
     fun isXml(): Boolean = contentType?.contains("xml", ignoreCase = true) == true
     fun isHtml(): Boolean = contentType?.contains("text/html", ignoreCase = true) == true
-    
+
+    fun validate(): APIValidation<T> {
+        return validationBuilder.validate(this)
+    }
 }

@@ -1,4 +1,4 @@
-package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation
+package io.github.kinasr.playwright_demo_maven.validation
 
 abstract class Validation(
     protected val builder: ValidationBuilder

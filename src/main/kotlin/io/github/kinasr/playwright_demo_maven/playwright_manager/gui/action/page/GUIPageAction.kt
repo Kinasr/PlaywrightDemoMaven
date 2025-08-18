@@ -2,7 +2,7 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.pag
 
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 
 class GUIPageAction(
     private val gui: GUI,

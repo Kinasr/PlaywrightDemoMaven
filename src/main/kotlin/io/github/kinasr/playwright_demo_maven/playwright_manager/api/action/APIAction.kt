@@ -10,13 +10,15 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.result
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 
 class APIAction(
     private val logger: PlayLogger,
     private val report: Report,
     private val config: Config,
     private val requestManager: APIRequestManager,
-    private val jsonConverter: Gson
+    private val jsonConverter: Gson,
+    private val validationBuilder: ValidationBuilder
 ) {
 
     fun <T> send(
@@ -44,7 +46,7 @@ class APIAction(
 
             return runCatching {
                 manager.request.fetch(endpoint, contextOptions)
-                    .result(bodyType, jsonConverter)
+                    .result(bodyType, jsonConverter, validationBuilder)
             }.onSuccess {
                 logger.info { "Request sent successfully with status code: ${it.statusCode}" }
                 step.parameter("Status Code", it.status)

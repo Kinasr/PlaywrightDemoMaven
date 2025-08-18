@@ -1,8 +1,12 @@
-package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation
+package io.github.kinasr.playwright_demo_maven.validation
 
 import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Locator
+import com.microsoft.playwright.Page
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.model.APIResult
+import io.github.kinasr.playwright_demo_maven.playwright_manager.api.validation.APIValidation
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.element.GUIElementValidation
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.page.GUIPageValidation
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
@@ -26,6 +30,18 @@ class ValidationBuilder(
 
     fun validate(locator: Locator): GUIElementValidation {
         return GUIElementValidation(this, GUIElement(locator))
+    }
+
+    fun validate(page: Page): GUIPageValidation {
+        return GUIPageValidation(this, page)
+    }
+
+    fun <T> validate(apiResult: APIResult<T>): APIValidation<T> {
+        return APIValidation(this, apiResult)
+    }
+
+    fun validate(str: String): StringValidation {
+        return StringValidation(this, str)
     }
 
     fun assert() {
@@ -96,6 +112,28 @@ class ValidationBuilder(
                         is TestAbortedException -> step.skipped("Validation skipped: $message", thr.message)
                         else -> step.broken("Validation broken: $message", thr.message)
                     }
+                    thr
+                }
+            )
+    }
+
+    inline fun performAPIValidation(
+        message: String,
+        failureMessage: String,
+        operation: () -> Unit
+    ): Throwable? {
+        val step = report.step(message)
+
+        return runCatching(operation)
+            .fold(
+                onSuccess = {
+                    logger.info { "Validation successful: $message" }
+                    step.passed("Validation successful: $message")
+                    null
+                },
+                onFailure = { thr: Throwable ->
+                    logger.error { "Validation failed: $failureMessage - with error: ${thr.message}" }
+                    step.broken("Validation broken: $message", thr.message)
                     thr
                 }
             )

@@ -15,7 +15,7 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.Bro
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.utils.constant.DateTimeFormatters
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.DoubleAdapter
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.ZonedDateTimeAdapter
@@ -154,7 +154,8 @@ val apiModule = module {
                 report = get(),
                 config = get(),
                 requestManager = get(),
-                jsonConverter = get()
+                jsonConverter = get(),
+                validationBuilder = get()
             )
         }
     }
