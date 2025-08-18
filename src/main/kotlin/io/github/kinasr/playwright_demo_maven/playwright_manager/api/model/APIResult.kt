@@ -10,7 +10,7 @@ data class APIResult<T>(
     val headers: Map<String, String>,
     val body: T?,
     val text: String,
-    val validationBuilder: ValidationBuilder,
+    private val validationBuilder: ValidationBuilder,
     val parseError: String? = null
 ) {
     val isSuccess = statusCode in 200..299

@@ -12,13 +12,14 @@ import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
+import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
 
 open class GUI(
     val logger: PlayLogger,
     val report: Report,
     val screenshot: ScreenshotManager,
     val context: BrowserContext,
-    private val validationBuilder: ValidationBuilder
+    private val validationBuilder: GUIValidationBuilder
 ) {
 
     fun element(element: GUIElementI) = GUIElementAction(this, validationBuilder, element)

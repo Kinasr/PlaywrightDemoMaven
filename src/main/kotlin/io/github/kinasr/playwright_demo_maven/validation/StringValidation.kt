@@ -11,7 +11,7 @@ class StringValidation(
     
     fun isNull(): StringValidation {
         builder.addValidation {
-            builder.performValidation(
+            builder.performer.validation(
                 "String is null",
                 "String $actual is not null"
             ) {
@@ -24,7 +24,7 @@ class StringValidation(
     
     infix fun equals(expected: String): StringValidation {
         builder.addValidation {
-            builder.performValidation(
+            builder.performer.validation(
                 "String is $expected",
                 "String $actual is not equal to $expected"
             ) {

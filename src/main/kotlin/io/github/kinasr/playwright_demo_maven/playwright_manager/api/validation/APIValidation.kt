@@ -3,6 +3,7 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.api.validation
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.model.APIResult
 import io.github.kinasr.playwright_demo_maven.validation.Validation
 import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationPerformer
 import org.opentest4j.AssertionFailedError
 
 class APIValidation<T>(
@@ -22,7 +23,7 @@ class APIValidation<T>(
 
     infix fun hasStatusCode(statusCode: Int): APIValidation<T> {
         builder.addValidation {
-            builder.performAPIValidation(
+            builder.performer.validation(
                 "API response status code is $statusCode",
                 "API response status code is not $statusCode"
             ) {
@@ -35,7 +36,7 @@ class APIValidation<T>(
 
     infix fun hasURL(url: String): APIValidation<T> {
         builder.addValidation {
-            builder.performAPIValidation(
+            builder.performer.validation(
                 "API response URL is $url",
                 "API response URL is not $url"
             ) {
@@ -48,7 +49,7 @@ class APIValidation<T>(
 
     fun hasHeader(key: String, value: String): APIValidation<T> {
         builder.addValidation {
-            builder.performAPIValidation(
+            builder.performer.validation(
                 "API response header $key is $value",
                 "API response header $key is not $value"
             ) {
@@ -63,7 +64,7 @@ class APIValidation<T>(
 
     infix fun hasBody(body: T): APIValidation<T> {
         builder.addValidation {
-            builder.performAPIValidation(
+            builder.performer.validation(
                 "API response body is $body",
                 "API response body is not $body"
             ) {
@@ -73,7 +74,7 @@ class APIValidation<T>(
         }
         return this
     }
-    
+
     fun body(): APIBodyValidation<T> {
         return APIBodyValidation(builder, apiResult.body)
     }

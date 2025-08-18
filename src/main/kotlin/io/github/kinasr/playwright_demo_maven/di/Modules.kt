@@ -15,13 +15,15 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.Bro
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
-import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.utils.constant.DateTimeFormatters
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.DoubleAdapter
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.ZonedDateTimeAdapter
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
+import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationPerformer
 import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -77,6 +79,35 @@ val utilsModule = module {
     }
 }
 
+val validationModel = module {
+    single {
+        ValidationPerformer(
+            logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
+            report = get()
+        )
+    }
+
+    single<ValidationBuilder> {
+        ValidationBuilder(
+            logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
+            report = get(),
+            performer = get()
+        )
+    }
+
+    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
+        scoped<GUIValidationBuilder> {
+            GUIValidationBuilder(
+                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
+                report = get(),
+                performer = get(),
+                screenshotManager = get(),
+                context = get()
+            )
+        }
+    }
+}
+
 val playwrightModule = module {
     single { PlaywrightManager(get<PlayLogger>(named(LoggerName.PLAYWRIGHT))) }
 
@@ -113,14 +144,15 @@ val guiModule = module {
         scoped<BrowserContext> { get() }
         scoped<Page> { get() }
 
-        scoped<ValidationBuilder> {
-            ValidationBuilder(
-                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
-                report = get<Report>(),
-                screenshot = get<ScreenshotManager>(),
-                context = get()
-            )
-        }
+//        scoped<GUIValidationBuilder> {
+//            GUIValidationBuilder(
+//                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
+//                report = get<Report>(),
+//                performer = get<ValidationPerformer>(),
+//                screenshotManager = get<ScreenshotManager>(),
+//                context = get()
+//            )
+//        }
 
         scoped<GUI> {
             GUI(
@@ -169,5 +201,15 @@ val pagesModule = module {
 }
 
 val mainModule = module {
-    includes(configModule, utilsModule, playwrightModule, guiModule, apiModule, logModule, reportModule, pagesModule)
+    includes(
+        configModule,
+        utilsModule,
+        playwrightModule,
+        validationModel,
+        guiModule,
+        apiModule,
+        logModule,
+        reportModule,
+        pagesModule
+    )
 }

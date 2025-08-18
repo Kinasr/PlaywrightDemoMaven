@@ -13,7 +13,7 @@ class ValidationPerformer(
     val report: Report
 ) {
 
-    inline fun performGUIValidation(
+    inline fun guiValidation(
         message: String,
         failureMessage: String,
         screenshot: ScreenshotManager,
@@ -48,7 +48,7 @@ class ValidationPerformer(
             )
     }
 
-    inline fun performValidation(
+    inline fun validation(
         message: String,
         failureMessage: String,
         operation: () -> Unit
