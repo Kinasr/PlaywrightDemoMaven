@@ -16,12 +16,16 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.Bro
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.utils.constant.DateTimeFormatters
+import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.DoubleAdapter
+import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.ZonedDateTimeAdapter
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.qameta.allure.Allure
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import java.time.ZonedDateTime
 
 // Define the test scope qualifier
 val configModule = module {
@@ -58,7 +62,19 @@ val reportModule = module {
 }
 
 val utilsModule = module {
-    single { GsonBuilder().create() }
+    single {
+        GsonBuilder()
+            .registerTypeAdapter(
+                ZonedDateTime::class.java, ZonedDateTimeAdapter(
+                    listOf(
+                        DateTimeFormatters.ZONED_DATE_TIME_FORMATTER,
+                        DateTimeFormatters.ZONED_DATE_TIME_FORMATTER_WITHOUT_DECIMAL
+                    )
+                )
+            )
+            .registerTypeAdapter(Double::class.java, DoubleAdapter())
+            .create()
+    }
 }
 
 val playwrightModule = module {
@@ -132,13 +148,15 @@ val apiModule = module {
 
     scope(named(PlaywrightTestScope.TEST_SCOPE)) {
         scoped<APIRequestManager> { get() }
-        factory { APIAction(
-            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-            report = get(),
-            config =  get(),
-            requestManager = get(),
-            jsonConverter = get()
-        ) }
+        factory {
+            APIAction(
+                logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+                report = get(),
+                config = get(),
+                requestManager = get(),
+                jsonConverter = get()
+            )
+        }
     }
 }
 
