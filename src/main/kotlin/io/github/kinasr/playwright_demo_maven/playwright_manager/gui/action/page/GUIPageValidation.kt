@@ -3,19 +3,20 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.pag
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PageAssertions
 import com.microsoft.playwright.assertions.PlaywrightAssertions
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.Validation
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.Validation
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationPerformer
 
 class GUIPageValidation(
     builder: ValidationBuilder,
-    private val page: Page,
+    private val page: Page
 ) : Validation(builder) {
     override val and: ValidationBuilder = builder
     override val then: ValidationBuilder = builder
 
     fun hasTitle(title: String, options: (PageAssertions.HasTitleOptions.() -> Unit) = { }): GUIPageValidation {
         builder.addValidation {
-            builder.performValidation(
+            builder.performer.validation(
                 "Page title is '${title}'",
                 "Page title is not '${title}'"
             ) {
@@ -28,7 +29,7 @@ class GUIPageValidation(
 
     fun hasURL(url: String, options: (PageAssertions.HasURLOptions.() -> Unit) = { }): GUIPageValidation {
         builder.addValidation {
-            builder.performValidation(
+            builder.performer.validation(
                 "Page URL is '$url'",
                 "Page URL is not '$url'"
             ) {

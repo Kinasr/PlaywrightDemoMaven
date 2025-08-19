@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentMap
 
 class BrowserManager(
     private val logger: PlayLogger,
-    private val browserConfig: Config.Browser,
+    private val config: Config,
     private val playwright: Playwright
 ) : KoinComponent, Closeable {
 
@@ -35,7 +35,7 @@ class BrowserManager(
             } ?: run {
                 logger.debug { "Initializing browser for thread: ${thr.name} (ID: $currentThreadId)" }
                 runCatching { initBrowser() }
-                    .onSuccess { logger.info { "Browser initialized: ${browserConfig.name} for thread: ${thr.name}" } }
+                    .onSuccess { logger.info { "Browser initialized: ${config.browser.name} for thread: ${thr.name}" } }
                     .onFailure { e ->
                         logger.error { "Failed to initialize browser: ${e.message} for thread: ${thr.name}" }
                         throw e
@@ -48,25 +48,25 @@ class BrowserManager(
     private fun initBrowser(): Browser {
         val options = browserOptions()
         return try {
-            when (browserConfig.name.lowercase()) {
+            when (config.browser.name.lowercase()) {
                 "firefox" -> playwright.firefox().launch(options)
                 "webkit" -> playwright.webkit().launch(options)
                 "chrome", "chromium" -> playwright.chromium().launch(options)
                 else -> {
-                    logger.warn { "Unknown browser '${browserConfig.name}', defaulting to Chromium" }
+                    logger.warn { "Unknown browser '${config.browser.name}', defaulting to Chromium" }
                     playwright.chromium().launch(options)
                 }
             }
         } catch (e: Exception) {
-            logger.error { "Failed to launch ${browserConfig.name}: ${e.message}" }
-            throw BrowserLaunchException("Could not initialize ${browserConfig.name} browser", e)
+            logger.error { "Failed to launch ${config.browser.name}: ${e.message}" }
+            throw BrowserLaunchException("Could not initialize ${config.browser.name} browser", e)
         }
     }
 
     private fun browserOptions(): BrowserType.LaunchOptions {
         return BrowserType.LaunchOptions().apply {
-            headless = browserConfig.headless
-            slowMo = browserConfig.slowMo
+            headless = config.browser.headless
+            slowMo = config.browser.slowMo
         }
     }
 

@@ -6,11 +6,11 @@ import org.slf4j.MDC
 
 class PlayLogger(
     val name: String,
-    val loggerConfig: Config.Logging
+    val config: Config
 ) {
     companion object {
-        fun get(name: String = "main", loggerConfig: Config.Logging): PlayLogger {
-            return PlayLogger(name, loggerConfig)
+        fun get(name: String = "main", config: Config): PlayLogger {
+            return PlayLogger(name, config)
         }
     }
 
@@ -29,7 +29,7 @@ class PlayLogger(
     }
 
     fun apiDebug(message: () -> Any?) {
-        if (loggerConfig.enableAPIDebug) {
+        if (config.logging.enableAPIDebug) {
             MDC.put("tag", "API-DEBUG")
             logger.debug(message)
             MDC.remove("tag")
@@ -37,7 +37,7 @@ class PlayLogger(
     }
 
     fun performance(message: () -> Any?) {
-        if (loggerConfig.enablePerformance) {
+        if (config.logging.enablePerformance) {
             MDC.put("tag", "PERFORMANCE")
             logger.info(message)
             MDC.remove("tag")
