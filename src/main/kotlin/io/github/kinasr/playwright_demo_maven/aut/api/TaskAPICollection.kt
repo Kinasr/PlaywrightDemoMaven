@@ -7,6 +7,7 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.API
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.model.APIResult
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import java.util.*
@@ -34,9 +35,19 @@ class TaskAPICollection(
                 })
             }
         }
+//        // Declare the new APIRequestManager instance in the scope
+//        scope.declare(
+//            get<APIRequestManager>(qualifier = named(PlaywrightTestScope.TEST_SCOPE)) {
+//                parametersOf(APIRequest.NewContextOptions().apply {
+//                    baseURL = "https://google.com"
+//                })
+//            }, allowOverride = true
+//        )
         scope.declare(apiRequest, allowOverride = true)
+        
+        val a: APIAction = scope.get()
 
-        val result = action.get(serviceName)
+        val result = a.get(serviceName)
         scope.close()
         return result
     }

@@ -169,17 +169,15 @@ val apiModule = module {
         )
     }
 
-    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        factory {
-            APIAction(
-                logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-                report = get(),
-                config = get(),
-                requestManager = get(),
-                jsonConverter = get(),
-                validationBuilder = get()
-            )
-        }
+    factory {
+        APIAction(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            report = get(),
+            config = get(),
+            requestManager = get(),
+            jsonConverter = get(),
+            validationBuilder = get()
+        )
     }
 }
 
@@ -191,9 +189,7 @@ val pagesModule = module {
 }
 
 val utAPIModule = module {
-    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        factory { TaskAPICollection(get()) }
-    }
+    factory { TaskAPICollection(get()) }
 }
 
 val mainModule = module {
