@@ -1,9 +1,11 @@
 package io.github.kinasr.playwright_demo_maven.tests
 
+import com.microsoft.playwright.APIRequest
+import io.github.kinasr.playwright_demo_maven.aut.api.TaskAPICollection
 import io.github.kinasr.playwright_demo_maven.di.PlaywrightTestScope
-import io.github.kinasr.playwright_demo_maven.playwright_manager.api.action.APIAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.APIRequestManager
 import org.junit.jupiter.api.Test
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.test.KoinTest
@@ -20,14 +22,13 @@ class DemoTest : KoinTest {
             named(PlaywrightTestScope.TEST_SCOPE)
         )
 
-        val apiRequest: APIRequestManager = get()
-        testScope.declare(apiRequest, allowOverride = true)
+        val taskAPICollection: TaskAPICollection = testScope.get()
 
-        val action: APIAction = testScope.get()
-        
-        action.get("/tasks")
-            .validate().hasStatusCode(404)
+        taskAPICollection.get()
+            .validate().isForbidden()
             .then.assert()
+        
+        taskAPICollection.get()
     }
 }
     

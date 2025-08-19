@@ -2,6 +2,7 @@ package io.github.kinasr.playwright_demo_maven.di
 
 import com.google.gson.GsonBuilder
 import com.microsoft.playwright.*
+import io.github.kinasr.playwright_demo_maven.aut.api.TaskAPICollection
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
@@ -144,16 +145,6 @@ val guiModule = module {
         scoped<BrowserContext> { get() }
         scoped<Page> { get() }
 
-//        scoped<GUIValidationBuilder> {
-//            GUIValidationBuilder(
-//                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
-//                report = get<Report>(),
-//                performer = get<ValidationPerformer>(),
-//                screenshotManager = get<ScreenshotManager>(),
-//                context = get()
-//            )
-//        }
-
         scoped<GUI> {
             GUI(
                 logger = get(named(LoggerName.PLAYWRIGHT)),
@@ -179,7 +170,6 @@ val apiModule = module {
     }
 
     scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        scoped<APIRequestManager> { get() }
         factory {
             APIAction(
                 logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
@@ -200,6 +190,12 @@ val pagesModule = module {
     }
 }
 
+val utAPIModule = module {
+    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
+        factory { TaskAPICollection(get()) }
+    }
+}
+
 val mainModule = module {
     includes(
         configModule,
@@ -210,6 +206,7 @@ val mainModule = module {
         apiModule,
         logModule,
         reportModule,
-        pagesModule
+        pagesModule,
+        utAPIModule
     )
 }

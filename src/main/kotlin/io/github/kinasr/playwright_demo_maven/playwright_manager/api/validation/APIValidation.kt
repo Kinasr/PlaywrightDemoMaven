@@ -16,9 +16,13 @@ class APIValidation<T>(
     fun isOK(): APIValidation<T> {
         return this hasStatusCode 200
     }
+    
+    fun isNotFound(): APIValidation<T> {
+        return this hasStatusCode 404
+    }
 
     fun isForbidden(): APIValidation<T> {
-        return this hasStatusCode 403
+        return this hasStatusCode 404
     }
 
     infix fun hasStatusCode(statusCode: Int): APIValidation<T> {

@@ -1,6 +1,7 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.api.action
 
 import com.google.gson.Gson
+import com.microsoft.playwright.impl.TargetClosedError
 import com.microsoft.playwright.options.RequestOptions
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.model.APIMethod
@@ -33,6 +34,11 @@ class APIAction(
                 this.setMethod(method.str)
                 this.setMaxRetries(config.api.maxRetries)
             }
+            
+            fun executeRequest(): APIResult<T> {
+                return manager.request.fetch(endpoint, contextOptions)
+                    .result(bodyType, jsonConverter, validationBuilder)
+            }
 
             val logMessage = "Sending request to: ${method.str}: ${manager.baseURL}$endpoint"
             logger.info { logMessage }
@@ -43,20 +49,23 @@ class APIAction(
                     contextOptions.toString().toByteArray(),
                     AttachmentType.JSON
                 )
-
-            return runCatching {
-                manager.request.fetch(endpoint, contextOptions)
-                    .result(bodyType, jsonConverter, validationBuilder)
-            }.onSuccess {
-                logger.info { "Request sent successfully with status code: ${it.statusCode}" }
-                step.parameter("Status Code", it.status)
-                step.attach("Response", it.text.toByteArray(), AttachmentType.JSON)
+            
+            return try {
+                executeRequest()
+            } catch (_: TargetClosedError) {
+                logger.warn { "Target closed, retrying the request." }
+                manager.close()
+                executeRequest()
+            } catch (e: Exception) {
+                logger.error { "Request failed with error: ${e.message}" }
+                step.failed("Request failed", e.message)
+                throw e
+            }.also { result ->
+                logger.info { "Request sent successfully with status code: ${result.statusCode}" }
+                step.parameter("Status Code", result.status)
+                step.attach("Response", result.text.toByteArray(), AttachmentType.JSON)
                 step.passed()
-            }.onFailure {
-                logger.error { "Request failed with error: ${it.message}" }
-                step.failed("Request failed", it.message)
-                throw it
-            }.getOrThrow()
+            }
         }
     }
 

@@ -15,23 +15,10 @@ class APIRequestManager(
     private val playwright: Playwright,
     private val contextOptions: APIRequest.NewContextOptions
 ) : Closeable {
-    val request: APIRequestContext
-    var baseURL: String
+    private var _requestContext: APIRequestContext? = null
 
     init {
-        contextOptions()
-        baseURL = contextOptions.baseURL
-        request = runCatching { playwright.request().newContext(contextOptions) }
-            .onSuccess { logger.info { "New API request context created." } }
-            .onFailure {
-                logger.error { "Failed to create API request context: ${it.message}" }
-                throw it
-            }
-            .getOrThrow()
-    }
-
-    private fun contextOptions(): APIRequest.NewContextOptions {
-        return contextOptions.apply {
+        contextOptions.apply {
             this.baseURL = this.baseURL.ifNullOrBlank { config.app.baseUrl }
             this.timeout = this.timeout.ifNull { config.api.timeout }
             this.extraHTTPHeaders = this.extraHTTPHeaders.ifNull { config.api.headers }
@@ -39,9 +26,26 @@ class APIRequestManager(
         }
     }
 
+    val request: APIRequestContext
+        get() {
+            _requestContext = _requestContext.ifNull {
+                runCatching { playwright.request().newContext(contextOptions) }
+                    .onSuccess { logger.info { "New API request context created." } }
+                    .onFailure {
+                        logger.error { "Failed to create API request context: ${it.message}" }
+                        throw it
+                    }
+                    .getOrThrow()
+            }
+            return _requestContext!!
+        }
+    val baseURL: String
+        get() = contextOptions.baseURL
+
     override fun close() {
         try {
-            request.dispose()
+            _requestContext?.dispose()
+            _requestContext = null
             logger.info { "API request context closed." }
         } catch (e: Exception) {
             logger.warn { "Error closing API request context: ${e.message}" }
