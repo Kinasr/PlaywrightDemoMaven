@@ -33,7 +33,7 @@ test:
   traces: true
   
 logging: 
-  level: INFO
+  level: DEBUG
   enablePerformance: true
   enableAPIDebug: true
   
