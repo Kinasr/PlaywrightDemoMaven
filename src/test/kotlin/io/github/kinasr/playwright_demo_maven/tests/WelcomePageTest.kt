@@ -2,6 +2,7 @@ package io.github.kinasr.playwright_demo_maven.tests
 
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.PlaywrightTestScope
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
@@ -30,33 +31,75 @@ class WelcomePageTest : KoinTest {
             named(PlaywrightTestScope.TEST_SCOPE)
         )
 
-        browserContext = get<BrowserContextManager> {
-            parametersOf(
-                Browser.NewContextOptions().apply {
-                    this.baseURL = config.app.baseUrl
-                }
-            )
-        }
+//        browserContext = get<BrowserContextManager> {
+//            parametersOf(
+//                Browser.NewContextOptions().apply {
+//                    this.baseURL = config.app.baseUrl
+//                }
+//            )
+//        }
 
-        val context = browserContext.context()
-        page = context.newPage()
-
-        testScope.declare(context, allowOverride = true)
-        testScope.declare(page, allowOverride = true)
+//        browserContext = get<BrowserContextManager>()
+//
+//        val context = browserContext.context()
+//        page = context.newPage()
+//
+//        testScope.declare(context, allowOverride = true)
+//        testScope.declare(page, allowOverride = true)
     }
 
     @Test
     fun `navigate to AB Testing page`() {
-        val welcomePage: WelcomePage = testScope.get()
+        val welcomePage: WelcomePage = get()
 
         welcomePage.navigate()
             .clickABTesting()
             .assertPageTitleContains("A/B Test")
     }
 
-    @AfterEach
-    fun tearDown() {
-        browserContext.close()
+    @Test
+    fun `navigate to different url`() {
+        testScope = getKoin().createScope(
+            "test_${UUID.randomUUID()}",
+            named(PlaywrightTestScope.TEST_SCOPE)
+        )
+
+        testScope.declare(
+            instance = get<BrowserContextManager> {
+            parametersOf(
+                Browser.NewContextOptions().apply {
+                    this.baseURL = "https://google.com"
+                }
+            )
+        }, allowOverride = true)
+        
+        val page: Page = testScope.get()
+        page.navigate("/")
+        
+        Thread.sleep(2000)
         testScope.close()
     }
+    
+    @Test
+    fun ttt() {
+        Playwright.create().use { playwright ->
+            // Use the URL from the command line output
+            val wsUrl = "ws://127.0.0.1:51159/devtools/browser/f8f94d39-6617-4340-bd20-94d3c909b0b4"
+
+            // Connect to the existing browser
+            val browser: Browser = playwright.chromium().connect(wsUrl)
+
+            // Now you can create a new page in the connected browser
+            val page = browser.newPage()
+            page.navigate("https://www.google.com")
+            println("Page title: " + page.title())
+        }
+    }
+
+    @AfterEach
+    fun tearDown() {
+//        browserContext.close()
+        testScope.close()
+    }
+    
 }

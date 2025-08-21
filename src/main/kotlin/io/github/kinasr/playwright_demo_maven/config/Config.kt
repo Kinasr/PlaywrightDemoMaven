@@ -62,12 +62,28 @@ open class Config(
                 0.0
             )
         }
+        
+        val timeout: Double by lazy { 
+            getEnvOrDefault(
+                "BROWSER_TIMEOUT",
+                config.browser?.timeout,
+                30000.0
+            )
+        }
 
         val devtools: Boolean by lazy {
             getEnvOrDefault(
                 "BROWSER_DEVTOOLS",
                 config.browser?.devtools,
                 false
+            )
+        }
+        
+        val websocketEndpoint: String by lazy {
+            getEnvOrDefault(
+                "BROWSER_WEBSOCKET_ENDPOINT",
+                config.browser?.websocketEndpoint,
+                ""
             )
         }
 

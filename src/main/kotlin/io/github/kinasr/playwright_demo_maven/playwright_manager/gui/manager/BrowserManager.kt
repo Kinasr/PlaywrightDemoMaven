@@ -31,7 +31,6 @@ class BrowserManager(
                         .onFailure { logger.warn { "Error closing unhealthy browser for thread ${thr.name}: ${it.message}" } }
                     null
                 }
-
             } ?: run {
                 logger.debug { "Initializing browser for thread: ${thr.name} (ID: $currentThreadId)" }
                 runCatching { initBrowser() }
@@ -46,15 +45,14 @@ class BrowserManager(
     }
 
     private fun initBrowser(): Browser {
-        val options = browserOptions()
         return try {
             when (config.browser.name.lowercase()) {
-                "firefox" -> playwright.firefox().launch(options)
-                "webkit" -> playwright.webkit().launch(options)
-                "chrome", "chromium" -> playwright.chromium().launch(options)
+                "firefox" -> launchOrConnectBrowser(playwright.firefox())
+                "webkit" -> launchOrConnectBrowser(playwright.webkit())
+                "chrome", "chromium" -> launchOrConnectBrowser(playwright.chromium())
                 else -> {
                     logger.warn { "Unknown browser '${config.browser.name}', defaulting to Chromium" }
-                    playwright.chromium().launch(options)
+                    launchOrConnectBrowser(playwright.chromium())
                 }
             }
         } catch (e: Exception) {
@@ -63,10 +61,25 @@ class BrowserManager(
         }
     }
 
-    private fun browserOptions(): BrowserType.LaunchOptions {
+    private fun launchOrConnectBrowser(browserType: BrowserType): Browser {
+        if (config.browser.websocketEndpoint.isNotBlank()) {
+            return browserType.connect(config.browser.websocketEndpoint, browserConnectOptions())
+        }
+        return browserType.launch(browserLaunchOptions())
+    }
+
+    private fun browserLaunchOptions(): BrowserType.LaunchOptions {
         return BrowserType.LaunchOptions().apply {
             headless = config.browser.headless
             slowMo = config.browser.slowMo
+            timeout = config.browser.timeout
+        }
+    }
+
+    private fun browserConnectOptions(): BrowserType.ConnectOptions {
+        return BrowserType.ConnectOptions().apply { 
+            slowMo = config.browser.slowMo
+            timeout = config.browser.timeout
         }
     }
 

@@ -96,17 +96,27 @@ val validationModel = module {
         )
     }
 
-    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        scoped<GUIValidationBuilder> {
-            GUIValidationBuilder(
-                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
-                report = get(),
-                performer = get(),
-                screenshotManager = get(),
-                context = get()
-            )
-        }
+    factory <GUIValidationBuilder> {
+        GUIValidationBuilder(
+            logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
+            report = get(),
+            performer = get(),
+            screenshotManager = get(),
+            context = get()
+        )
     }
+
+//    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
+//        scoped<GUIValidationBuilder> {
+//            GUIValidationBuilder(
+//                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
+//                report = get(),
+//                performer = get(),
+//                screenshotManager = get(),
+//                context = get()
+//            )
+//        }
+//    }
 }
 
 val playwrightModule = module {
@@ -132,29 +142,43 @@ val guiModule = module {
         PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/screenshots")
     }
 
-    factory { (options: Browser.NewContextOptions) ->
+    factory<BrowserContextManager> { params ->
+        val context = params.getOrNull<Browser.NewContextOptions>() ?: Browser.NewContextOptions()
+
         BrowserContextManager(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            config = get(),
             browser = get<BrowserManager>().browser(),
-            contextOptions = options
+            contextOptions = context
         )
     }
 
-    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        scoped<BrowserContextManager> { get() }
-        scoped<BrowserContext> { get() }
-        scoped<Page> { get() }
+    factory<BrowserContext> { get<BrowserContextManager>().context() }
 
-        scoped<GUI> {
-            GUI(
-                logger = get(named(LoggerName.PLAYWRIGHT)),
-                report = get(),
-                screenshot = get(),
-                context = get(),
-                validationBuilder = get()
-            )
-        }
-    }
+    factory<Page> { get<BrowserContext>().newPage() }
+    
+    factory<GUI> { GUI(
+        logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+        report = get(),
+        screenshot = get(),
+        context = get(),
+        validationBuilder = get()
+    )}
+
+//    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
+////        scoped<BrowserContext> { get() }
+////        scoped<Page> { get() }
+//
+//        scoped<GUI> {
+//            GUI(
+//                logger = get(named(LoggerName.PLAYWRIGHT)),
+//                report = get(),
+//                screenshot = get(),
+//                context = get(),
+//                validationBuilder = get()
+//            )
+//        }
+//    }
 }
 
 val apiModule = module {
@@ -182,10 +206,13 @@ val apiModule = module {
 }
 
 val pagesModule = module {
-    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        scoped { WelcomePage(get(), get()) }
-        scoped { ABTestingPage(get(), get()) }
-    }
+    factory { WelcomePage(get(), get()) }
+    factory { ABTestingPage(get(), get()) }
+    
+//    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
+//        scoped { WelcomePage(get(), get()) }
+//        scoped { ABTestingPage(get(), get()) }
+//    }
 }
 
 val utAPIModule = module {

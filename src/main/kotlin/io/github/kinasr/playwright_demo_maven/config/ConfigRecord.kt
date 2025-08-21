@@ -20,6 +20,7 @@ data class BrowserConfig(
     var timeout: Double? = null,
     var slowMo: Double? = null,
     var devtools: Boolean? = null,
+    var websocketEndpoint: String? = null,
     var viewport: ViewPortConfig? = null
 )
 

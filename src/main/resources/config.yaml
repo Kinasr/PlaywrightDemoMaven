@@ -8,6 +8,7 @@ browser:
   timeout: 30000
   slowMo: 0
   devtools: false
+  websocketEndpoint: 
   viewport:
     width: 1920
     height: 1080
