@@ -3,6 +3,7 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui
 import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.browser.GUIBrowserAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.element.GUIElementAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.page.GUIPageAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
@@ -12,48 +13,25 @@ import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
 import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
+import io.github.oshai.kotlinlogging.KotlinLogging.logger
 
 open class GUI(
-    val logger: PlayLogger,
-    val report: Report,
-    val screenshot: ScreenshotManager,
-    val page: Page,
-    private val validationBuilder: GUIValidationBuilder
+    internal val performer: GUIPerformer,
+    internal val validationBuilder: GUIValidationBuilder,
+    internal val context: BrowserContext
 ) {
 
-    fun element(element: GUIElementI) = GUIElementAction(this, validationBuilder, element)
+    fun element(element: GUIElementI) = GUIElementAction(this, element)
 
     fun element(locator: Locator): GUIElementAction {
-        return GUIElementAction(this, validationBuilder, GUIElement(locator))
+        return GUIElementAction(this, GUIElement(locator))
     }
 
     fun page(page: Page): GUIPageAction {
-        return GUIPageAction(this, validationBuilder, page)
+        return GUIPageAction(this, page)
     }
-
-    inline fun <T> performAction(
-        message: String,
-        failureMessage: String = message,
-        takeScreenshotOnFailure: Boolean = true,
-        action: () -> T
-    ): T {
-        logger.info { message }
-        val step = report.step(message)
-
-        return try {
-            val result = action()
-            step.passed()
-            result
-        } catch (e: Exception) {
-            if (takeScreenshotOnFailure) {
-                screenshot.takeScreenshot(page, message.replace(" ", "_"))
-                    ?.let { image ->
-                        step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
-                    }
-            }
-            logger.error { "$failureMessage - with error: ${e.message}" }
-            step.failed(failureMessage, e.message)
-            throw e
-        }
+    
+    fun browser(context: BrowserContext? = null): GUIBrowserAction {
+        return GUIBrowserAction(this, context ?: this.context)
     }
 }

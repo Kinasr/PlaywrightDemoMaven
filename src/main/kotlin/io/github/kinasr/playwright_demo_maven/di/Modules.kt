@@ -12,6 +12,7 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManag
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.action.APIAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.APIRequestManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUIPerformer
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
@@ -157,12 +158,19 @@ val guiModule = module {
 
     factory<Page> { get<BrowserContext>().newPage() }
     
+    factory<GUIPerformer> {
+        GUIPerformer(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            report = get(),
+            screenshot = get(),
+            page = get()
+        )
+    }
+    
     factory<GUI> { GUI(
-        logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-        report = get(),
-        screenshot = get(),
-        page = get(),
-        validationBuilder = get()
+        performer = get(),
+        validationBuilder = get(),
+        context = get()
     )}
 
 //    scope(named(PlaywrightTestScope.TEST_SCOPE)) {

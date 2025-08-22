@@ -10,10 +10,13 @@ class GUIBrowserAction(
     private val context: BrowserContext
 ) {
 
-    fun focusOnNewPage(action: () -> Unit, options: (BrowserContext.WaitForPageOptions.() -> Unit) = {}): GUIPageAction {
-        val newPage = gui.performAction(
-            message = "",
-            failureMessage = ""
+    fun focusOnNewPage(
+        action: () -> Unit,
+        options: (BrowserContext.WaitForPageOptions.() -> Unit) = {}
+    ): GUIPageAction {
+        val newPage = gui.performer.action(
+            message = "Waiting for new page to open",
+            failureMessage = "Failed to wait for new page to open"
         ) {
             val op = BrowserContext.WaitForPageOptions().apply(options)
             context.waitForPage(op, action)
@@ -21,16 +24,16 @@ class GUIBrowserAction(
 
         return gui.page(newPage).focus()
     }
-    
+
     fun focusOnPage(title: String): GUIPageAction {
-        val page = gui.performAction(
+        val page = gui.performer.action(
             message = "Focusing on page with title '$title'",
             failureMessage = "Failed to focus on page with title '$title'"
         ) {
             context.pages().firstOrNull { it.title() == title }
                 ?: throw GUIException("Page with title '$title' not found")
         }
-        
+
         return gui.page(page).focus()
     }
 }

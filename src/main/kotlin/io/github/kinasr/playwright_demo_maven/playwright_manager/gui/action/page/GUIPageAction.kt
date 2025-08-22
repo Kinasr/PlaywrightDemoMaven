@@ -7,13 +7,12 @@ import jdk.internal.joptsimple.internal.Messages.message
 
 class GUIPageAction(
     private val gui: GUI,
-    private val validationBuilder: ValidationBuilder,
     private val page: Page
 ) {
 
     fun navigate(url: String = "", options: (Page.NavigateOptions.() -> Unit) = { }): GUIPageAction {
         val urlMsg = url.ifBlank { "BaseURL" }
-        gui.performAction(
+        gui.performer.action(
             message = "Navigating to $urlMsg",
             failureMessage = "Failed to navigate to $urlMsg",
         ) {
@@ -26,7 +25,7 @@ class GUIPageAction(
     fun focus(): GUIPageAction {
         val pageTitle = this.get().title()
         
-        gui.performAction(
+        gui.performer.action(
             message = "Focusing on page $pageTitle",
             failureMessage = "Failed to focus on page $pageTitle",
         ) {
@@ -40,6 +39,6 @@ class GUIPageAction(
     }
 
     fun validate(): GUIPageValidation {
-        return GUIPageValidation(validationBuilder, page)
+        return gui.validationBuilder.validate(page)
     }
 }

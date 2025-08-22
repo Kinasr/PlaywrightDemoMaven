@@ -10,7 +10,7 @@ class GUIElementGetter(
 ) {
     
     fun textContent(options: (Locator.TextContentOptions.() -> Unit) = { }): String {
-        return gui.performAction(
+        return gui.performer.action(
             "Getting text content of element '${element.name}'",
             "Failed to get text content of element '${element.name}'"
         ) {

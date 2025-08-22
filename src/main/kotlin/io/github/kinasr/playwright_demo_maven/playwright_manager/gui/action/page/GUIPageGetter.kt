@@ -2,6 +2,7 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.pag
 
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
+import jdk.internal.joptsimple.internal.Messages.message
 
 class GUIPageGetter(
     private val gui: GUI,
@@ -9,7 +10,7 @@ class GUIPageGetter(
 ) {
     
     fun title(): String {
-        return gui.performAction(
+        return gui.performer.action(
             message = "Getting page title",
             failureMessage = "Failed to get page title",
         ) {

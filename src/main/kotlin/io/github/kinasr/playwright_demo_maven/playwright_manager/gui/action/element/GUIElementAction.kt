@@ -3,17 +3,14 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.ele
 import com.microsoft.playwright.Locator
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
-import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
-import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 
 class GUIElementAction(
     private val gui: GUI,
-    private val validationBuilder: GUIValidationBuilder,
     private val element: GUIElementI
 ) {
 
     fun click(options: (Locator.ClickOptions.() -> Unit) = { }): GUIElementAction {
-        gui.performAction(
+        gui.performer.action(
             message = "Clicking on element '${element.name}'",
             failureMessage = "Failed to click on element '${element.name}'"
         ) {
@@ -24,7 +21,7 @@ class GUIElementAction(
     }
 
     fun fill(text: String, options: (Locator.FillOptions.() -> Unit) = { }): GUIElementAction {
-        gui.performAction(
+        gui.performer.action(
             message = "Filling text '$text' in element '${element.name}'",
             failureMessage = "Failed to fill text '$text' in element '${element.name}'"
         ) {
@@ -39,6 +36,6 @@ class GUIElementAction(
     }
     
     fun validate(): GUIElementValidation {
-        return validationBuilder.validate(element)
+        return gui.validationBuilder.validate(element)
     }
 }
