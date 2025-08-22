@@ -16,6 +16,7 @@ data class PlaywrightConfig(
 
 data class BrowserConfig(
     var name: String? = null,
+    var channel: String? = null,
     var headless: Boolean? = null,
     var timeout: Double? = null,
     var slowMo: Double? = null,

@@ -46,6 +46,14 @@ open class Config(
                 "chromium"
             )
         }
+        
+        val channel: String by lazy { 
+            getEnvOrDefault(
+                "BROWSER_CHANNEL",
+                config.browser?.channel,
+                ""
+            )
+        }
 
         val headless: Boolean by lazy {
             getEnvOrDefault(

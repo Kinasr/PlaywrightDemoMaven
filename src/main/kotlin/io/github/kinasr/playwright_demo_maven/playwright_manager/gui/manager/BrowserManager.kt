@@ -73,11 +73,12 @@ class BrowserManager(
             headless = config.browser.headless
             slowMo = config.browser.slowMo
             timeout = config.browser.timeout
+            channel = config.browser.channel
         }
     }
 
     private fun browserConnectOptions(): BrowserType.ConnectOptions {
-        return BrowserType.ConnectOptions().apply { 
+        return BrowserType.ConnectOptions().apply {
             slowMo = config.browser.slowMo
             timeout = config.browser.timeout
         }

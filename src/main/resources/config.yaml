@@ -3,7 +3,9 @@ playwright:
 
 browser:
   # chromium, firefox, webkit
-  name: "chromium"
+  name: chromium
+  # "chrome", "chrome-beta", "chrome-dev", "chrome-canary", "msedge", "msedge-beta", "msedge-dev", or "msedge-canary"
+  channel: msedge
   headless: false
   timeout: 30000
   slowMo: 0
