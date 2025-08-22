@@ -24,12 +24,12 @@ class WelcomePageTest : KoinTest {
     private lateinit var browserContext: BrowserContextManager
     private lateinit var page: Page
 
-    @BeforeEach
-    fun setup() {
-        testScope = getKoin().createScope(
-            "test_${UUID.randomUUID()}",
-            named(PlaywrightTestScope.TEST_SCOPE)
-        )
+//    @BeforeEach
+//    fun setup() {
+//        testScope = getKoin().createScope(
+//            "test_${UUID.randomUUID()}",
+//            named(PlaywrightTestScope.TEST_SCOPE)
+//        )
 
 //        browserContext = get<BrowserContextManager> {
 //            parametersOf(
@@ -46,7 +46,7 @@ class WelcomePageTest : KoinTest {
 //
 //        testScope.declare(context, allowOverride = true)
 //        testScope.declare(page, allowOverride = true)
-    }
+//    }
 
     @Test
     fun `navigate to AB Testing page`() {
@@ -96,10 +96,10 @@ class WelcomePageTest : KoinTest {
         }
     }
 
-    @AfterEach
-    fun tearDown() {
+//    @AfterEach
+//    fun tearDown() {
 //        browserContext.close()
-        testScope.close()
-    }
+//        testScope.close()
+//    }
     
 }
