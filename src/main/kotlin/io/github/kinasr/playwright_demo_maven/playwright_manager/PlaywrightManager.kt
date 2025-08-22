@@ -8,8 +8,9 @@ import java.util.concurrent.ConcurrentMap
 class PlaywrightManager(
     private val logger: PlayLogger
 ) : AutoCloseable {
-
-    private val playwrightPool: ConcurrentMap<Long, Playwright> = ConcurrentHashMap()
+    companion object {
+        private val playwrightPool: ConcurrentMap<Long, Playwright> = ConcurrentHashMap()
+    }
 
     fun initialize(options: (Playwright.CreateOptions.() -> Unit) = {}): Playwright {
         val worker = Thread.currentThread()
@@ -29,15 +30,15 @@ class PlaywrightManager(
             }
         }!!
     }
-    
+
     @Synchronized
     fun clearPool() {
         logger.info { "Clearing Playwright pool." }
-        playwrightPool.forEach { workerId, playwright -> 
+        playwrightPool.forEach { workerId, playwright ->
             closePlaywright(workerId, playwright)
         }
     }
-    
+
     private fun closePlaywright(threadId: Long, playwright: Playwright) {
         runCatching { playwright.close() }
             .onSuccess { logger.trace { "Playwright closed for thread id: $threadId" } }

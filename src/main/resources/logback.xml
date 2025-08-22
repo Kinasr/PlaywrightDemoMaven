@@ -53,7 +53,7 @@
     </logger>
 
     <!-- Root Logger -->
-    <root level="INFO">
+    <root level="Trace">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>

@@ -16,8 +16,9 @@ class BrowserManager(
     private val config: Config,
     private val playwright: Playwright
 ) : KoinComponent, Closeable {
-
-    private val browserPool: ConcurrentMap<Long, Browser> = ConcurrentHashMap()
+    companion object {
+        private val browserPool: ConcurrentMap<Long, Browser> = ConcurrentHashMap()
+    }
 
     fun browser(): Browser {
         val worker = Thread.currentThread()
@@ -32,9 +33,9 @@ class BrowserManager(
                     null
                 }
             } ?: run {
-                logger.debug { "Initializing browser for thread: ${worker.name} (ID: $workerId)" }
+                logger.info { "Initializing browser for thread: ${worker.name} (ID: $workerId)" }
                 runCatching { initBrowser() }
-                    .onSuccess { logger.info { "Browser initialized: ${config.browser.name} for thread: ${worker.name}" } }
+                    .onSuccess { logger.debug { "Browser initialized: ${config.browser.name} for thread: ${worker.name}" } }
                     .onFailure { e ->
                         logger.error { "Failed to initialize browser: ${e.message} for thread: ${worker.name}" }
                         throw e

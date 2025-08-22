@@ -13,11 +13,13 @@ class BrowserContextManager(
     private val browser: Browser,
     private val contextOptions: Browser.NewContextOptions
 ) : Closeable {
-    private val browserContext: ThreadLocal<BrowserContext> = ThreadLocal()
+    companion object {
+        private val browserContext: ThreadLocal<BrowserContext> = ThreadLocal()
+    }
 
     fun context(): BrowserContext {
         if (browserContext.get() == null) {
-            contextOptions.apply { 
+            contextOptions.apply {
                 this.baseURL = this.baseURL.ifNullOrBlank { config.app.baseUrl }
             }
             try {
