@@ -3,6 +3,7 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.pag
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
+import jdk.internal.joptsimple.internal.Messages.message
 
 class GUIPageAction(
     private val gui: GUI,
@@ -18,6 +19,18 @@ class GUIPageAction(
         ) {
             val op = Page.NavigateOptions().apply(options)
             page.navigate(url, op)
+        }
+        return this
+    }
+    
+    fun focus(): GUIPageAction {
+        val pageTitle = this.get().title()
+        
+        gui.performAction(
+            message = "Focusing on page $pageTitle",
+            failureMessage = "Failed to focus on page $pageTitle",
+        ) {
+            page.bringToFront()
         }
         return this
     }

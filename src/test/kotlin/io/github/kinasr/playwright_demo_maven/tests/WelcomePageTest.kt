@@ -95,6 +95,15 @@ class WelcomePageTest : KoinTest {
             println("Page title: " + page.title())
         }
     }
+    
+    @Test
+    fun ttt02() {
+        val playwright = Playwright.create()
+        val browser = playwright.chromium().launch()
+        val context = browser.newContext()
+        val page = context.newPage()
+        
+    }
 
 //    @AfterEach
 //    fun tearDown() {

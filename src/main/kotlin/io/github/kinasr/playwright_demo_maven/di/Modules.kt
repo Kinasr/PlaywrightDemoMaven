@@ -102,7 +102,7 @@ val validationModel = module {
             report = get(),
             performer = get(),
             screenshotManager = get(),
-            context = get()
+            page = get()
         )
     }
 
@@ -161,7 +161,7 @@ val guiModule = module {
         logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
         report = get(),
         screenshot = get(),
-        context = get(),
+        page = get(),
         validationBuilder = get()
     )}
 

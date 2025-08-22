@@ -8,7 +8,6 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.page
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
-import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
@@ -18,7 +17,7 @@ open class GUI(
     val logger: PlayLogger,
     val report: Report,
     val screenshot: ScreenshotManager,
-    val context: BrowserContext,
+    val page: Page,
     private val validationBuilder: GUIValidationBuilder
 ) {
 
@@ -27,7 +26,7 @@ open class GUI(
     fun element(locator: Locator): GUIElementAction {
         return GUIElementAction(this, validationBuilder, GUIElement(locator))
     }
-    
+
     fun page(page: Page): GUIPageAction {
         return GUIPageAction(this, validationBuilder, page)
     }
@@ -40,14 +39,14 @@ open class GUI(
     ): T {
         logger.info { message }
         val step = report.step(message)
-        
+
         return try {
             val result = action()
             step.passed()
             result
         } catch (e: Exception) {
             if (takeScreenshotOnFailure) {
-                screenshot.takeScreenshot(context, message.replace(" ", "_"))
+                screenshot.takeScreenshot(page, message.replace(" ", "_"))
                     ?.let { image ->
                         step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
                     }

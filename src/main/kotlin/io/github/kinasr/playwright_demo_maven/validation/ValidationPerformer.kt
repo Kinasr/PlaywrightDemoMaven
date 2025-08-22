@@ -1,6 +1,6 @@
 package io.github.kinasr.playwright_demo_maven.validation
 
-import com.microsoft.playwright.BrowserContext
+import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
@@ -17,7 +17,7 @@ class ValidationPerformer(
         message: String,
         failureMessage: String,
         screenshot: ScreenshotManager,
-        context: BrowserContext,
+        page: Page,
         takeScreenshotOnFailure: Boolean = true,
         operation: () -> Unit
     ): Throwable? {
@@ -32,7 +32,7 @@ class ValidationPerformer(
                 },
                 onFailure = { thr: Throwable ->
                     if (takeScreenshotOnFailure) {
-                        screenshot.takeScreenshot(context, message)?.let { image ->
+                        screenshot.takeScreenshot(page, message)?.let { image ->
                             step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
                         }
                     }

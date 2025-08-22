@@ -1,7 +1,6 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot
 
 import com.microsoft.playwright.Browser
-import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
@@ -15,20 +14,20 @@ class PlayScreenshot(
     private val directory: String
 ) : ScreenshotManager {
 
-    override fun takeScreenshot(context: BrowserContext, actionName: String): ByteArray? {
+    override fun takeScreenshot(page: Page, actionName: String): ByteArray? {
         val filename = "${actionName}_${ZonedDateTime.now().timestamp()}.png"
 
         return try {
             val path = Paths.get(directory, filename)
             Files.createDirectories(path.parent)
 
-            context.pages().firstOrNull()?.screenshot(Page.ScreenshotOptions().setPath(path))
+            page.screenshot(Page.ScreenshotOptions().setPath(path))
         } catch (e: Exception) {
             logger.warn { "Failed to take screenshot: ${e.message}" }
             null
         }
     }
-    
+
     fun x(browser: Browser) {
         browser.contexts().firstOrNull()?.pages()?.firstOrNull()?.screenshot()
     }
