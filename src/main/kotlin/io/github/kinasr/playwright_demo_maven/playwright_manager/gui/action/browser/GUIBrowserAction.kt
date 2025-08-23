@@ -1,6 +1,7 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.browser
 
 import com.microsoft.playwright.BrowserContext
+import com.microsoft.playwright.options.Cookie
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.page.GUIPageAction
 import io.github.kinasr.playwright_demo_maven.utils.exception.GUIException
@@ -35,5 +36,15 @@ class GUIBrowserAction(
         }
 
         return gui.page(page).focus()
+    }
+    
+    fun addCookies(cookies: List<Cookie>): GUIBrowserAction {
+        gui.performer.action(
+            message = "Adding cookies",
+            failureMessage = "Failed to add cookies"
+        ) {
+            context.addCookies(cookies)
+        }
+        return this
     }
 }

@@ -3,12 +3,12 @@ package io.github.kinasr.playwright_demo_maven.tests
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.options.Cookie
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.PlaywrightTestScope
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -50,6 +50,12 @@ class WelcomePageTest : KoinTest {
 
     @Test
     fun `navigate to AB Testing page`() {
+//        val gui: GUI = get()
+//        gui.browser().addCookies(listOf(
+//            Cookie("ABC", "abc")
+//                .setDomain("the-internet.herokuapp.com")
+//                .setPath("/")
+//        ))
         val welcomePage: WelcomePage = get()
 
         welcomePage.navigate()
@@ -66,20 +72,21 @@ class WelcomePageTest : KoinTest {
 
         testScope.declare(
             instance = get<BrowserContextManager> {
-            parametersOf(
-                Browser.NewContextOptions().apply {
-                    this.baseURL = "https://google.com"
-                }
-            )
-        }, allowOverride = true)
-        
+                parametersOf(
+                    Browser.NewContextOptions().apply {
+                        this.baseURL = "https://google.com"
+                    }
+                )
+            }, allowOverride = true
+        )
+
         val page: Page = testScope.get()
         page.navigate("/")
-        
+
         Thread.sleep(2000)
         testScope.close()
     }
-    
+
     @Test
     fun ttt() {
         Playwright.create().use { playwright ->
@@ -95,14 +102,14 @@ class WelcomePageTest : KoinTest {
             println("Page title: " + page.title())
         }
     }
-    
+
     @Test
     fun ttt02() {
         val playwright = Playwright.create()
         val browser = playwright.chromium().launch()
         val context = browser.newContext()
         val page = context.newPage()
-        
+
     }
 
 //    @AfterEach
@@ -110,5 +117,5 @@ class WelcomePageTest : KoinTest {
 //        browserContext.close()
 //        testScope.close()
 //    }
-    
+
 }

@@ -216,11 +216,6 @@ val apiModule = module {
 val pagesModule = module {
     factory { WelcomePage(get(), get()) }
     factory { ABTestingPage(get(), get()) }
-    
-//    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-//        scoped { WelcomePage(get(), get()) }
-//        scoped { ABTestingPage(get(), get()) }
-//    }
 }
 
 val utAPIModule = module {
