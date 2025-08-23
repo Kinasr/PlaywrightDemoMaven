@@ -1,7 +1,7 @@
 package io.github.kinasr.playwright_demo_maven.validation
 
 import com.microsoft.playwright.Page
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManagerI
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
@@ -16,7 +16,7 @@ class ValidationPerformer(
     inline fun guiValidation(
         message: String,
         failureMessage: String,
-        screenshot: ScreenshotManager,
+        screenshot: ScreenshotManagerI,
         page: Page,
         takeScreenshotOnFailure: Boolean = true,
         operation: () -> Unit

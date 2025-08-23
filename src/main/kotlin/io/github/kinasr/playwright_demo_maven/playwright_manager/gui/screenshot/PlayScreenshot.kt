@@ -12,7 +12,7 @@ import java.time.ZonedDateTime
 class PlayScreenshot(
     private val logger: PlayLogger,
     private val directory: String
-) : ScreenshotManager {
+) : ScreenshotManagerI {
 
     override fun takeScreenshot(page: Page, actionName: String): ByteArray? {
         val filename = "${actionName}_${ZonedDateTime.now().timestamp()}.png"

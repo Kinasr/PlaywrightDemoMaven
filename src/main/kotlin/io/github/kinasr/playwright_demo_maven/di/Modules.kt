@@ -16,7 +16,7 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUIPerforme
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManagerI
 import io.github.kinasr.playwright_demo_maven.utils.constant.DateTimeFormatters
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.DoubleAdapter
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.ZonedDateTimeAdapter
@@ -139,7 +139,7 @@ val guiModule = module {
         )
     }
 
-    single<ScreenshotManager> {
+    single<ScreenshotManagerI> {
         PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/screenshots")
     }
 

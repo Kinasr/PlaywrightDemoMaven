@@ -1,7 +1,7 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.gui
 
 import com.microsoft.playwright.Page
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManagerI
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
@@ -9,7 +9,7 @@ import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
 class GUIPerformer(
     val logger: PlayLogger,
     val report: Report,
-    val screenshot: ScreenshotManager,
+    val screenshot: ScreenshotManagerI,
     val page: Page
 ) {
 
