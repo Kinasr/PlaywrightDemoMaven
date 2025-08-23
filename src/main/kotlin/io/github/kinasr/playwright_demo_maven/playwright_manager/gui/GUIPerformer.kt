@@ -1,7 +1,6 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.gui
 
-import com.microsoft.playwright.Page
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManagerI
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
@@ -9,8 +8,7 @@ import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
 class GUIPerformer(
     val logger: PlayLogger,
     val report: Report,
-    val screenshot: ScreenshotManagerI,
-    val page: Page
+    val screenshot: ScreenshotManager,
 ) {
 
     inline fun <T> action(
@@ -28,7 +26,7 @@ class GUIPerformer(
             result
         } catch (e: Exception) {
             if (takeScreenshotOnFailure) {
-                screenshot.takeScreenshot(page, message.replace(" ", "_"))
+                screenshot.capture(message.replace(" ", "_"))
                     ?.let { image ->
                         step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
                     }
@@ -38,5 +36,5 @@ class GUIPerformer(
             throw e
         }
     }
-    
+
 }

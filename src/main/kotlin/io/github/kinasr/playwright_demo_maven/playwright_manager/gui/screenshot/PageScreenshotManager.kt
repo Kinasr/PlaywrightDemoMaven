@@ -3,7 +3,6 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.timestamp
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.ZonedDateTime
 
@@ -18,11 +17,11 @@ class PageScreenshotManager(
     }
 
     fun capture(actionName: String, options: (Page.ScreenshotOptions.() -> Unit)): ByteArray? {
+//        TODO("Remove any / form the file name")
         val filename = "${actionName}_${ZonedDateTime.now().timestamp()}.png"
 
         return runCatching {
             val path = Paths.get(directory, filename)
-            Files.createDirectories(path.parent)
 
             val op = Page.ScreenshotOptions().apply {
                 setPath(path)

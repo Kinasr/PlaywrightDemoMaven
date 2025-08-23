@@ -3,7 +3,6 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot
 import com.microsoft.playwright.Locator
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.timestamp
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.ZonedDateTime
 
@@ -21,7 +20,6 @@ class LocatorScreenshotManager(
 
         return runCatching {
             val path = Paths.get(directory, filename)
-            Files.createDirectories(path.parent)
 
             val op = Locator.ScreenshotOptions().apply {
                 setPath(path)

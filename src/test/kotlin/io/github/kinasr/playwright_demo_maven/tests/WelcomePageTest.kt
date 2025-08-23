@@ -60,7 +60,7 @@ class WelcomePageTest : KoinTest {
 
         welcomePage.navigate()
             .clickABTesting()
-            .assertPageTitleContains("A/B Test")
+            .assertPageTitleContains("A/B Testddd")
     }
 
     @Test
