@@ -22,6 +22,7 @@ data class BrowserConfig(
     var slowMo: Double? = null,
     var devtools: Boolean? = null,
     var websocketEndpoint: String? = null,
+    var screenshotDir: String? = null,
     var viewport: ViewPortConfig? = null
 )
 

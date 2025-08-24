@@ -11,6 +11,11 @@ class ValidationPerformer(
     val logger: PlayLogger,
     val report: Report
 ) {
+    
+//    inline fun locatorValidation(
+//        message: String,
+//        failureMessage: String,
+//    )
 
     inline fun guiValidation(
         message: String,

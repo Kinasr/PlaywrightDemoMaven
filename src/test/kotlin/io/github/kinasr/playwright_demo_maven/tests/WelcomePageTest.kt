@@ -109,6 +109,10 @@ class WelcomePageTest : KoinTest {
         val browser = playwright.chromium().launch()
         val context = browser.newContext()
         val page = context.newPage()
+        
+        
+        context.pages()
+        context.backgroundPages()
 
     }
 

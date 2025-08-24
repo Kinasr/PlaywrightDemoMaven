@@ -11,6 +11,7 @@ browser:
   slowMo: 0
   devtools: false
   websocketEndpoint: 
+  screenshotDir: "./screenshots"
   viewport:
     width: 1920
     height: 1080

@@ -95,6 +95,14 @@ open class Config(
             )
         }
 
+        val screenshotDir: String by lazy {
+            getEnvOrDefault(
+                "BROWSER_SCREENSHOT_DIR",
+                config.browser?.screenshotDir,
+                "./target/screenshots"
+            )
+        }
+
         val viewportWidth: Int by lazy {
             getEnvOrDefault(
                 "BROWSER_VIEWPORT_WIDTH",

@@ -102,8 +102,7 @@ val validationModel = module {
             logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
             report = get(),
             performer = get(),
-            screenshotManager = get<PageScreenshotManager>(),
-            page = get()
+            screenshotManager = get<PageScreenshotManager>()
         )
     }
 
