@@ -6,8 +6,9 @@ import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.options.Cookie
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.PlaywrightTestScope
-import io.github.kinasr.playwright_demo_maven.pages.ABTestingPage
+import io.github.kinasr.playwright_demo_maven.pages.ABTestingPageFactory
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
+import io.github.kinasr.playwright_demo_maven.pages.WelcomePageFactory
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
 import org.junit.jupiter.api.Test
@@ -52,36 +53,37 @@ class WelcomePageTest : KoinTest {
 
     @Test
     fun `navigate to AB Testing page`() {
-        val gui: GUI = get()
-        gui.browser().addCookies(listOf(
-            Cookie("ABC", "abc")
-                .setDomain("the-internet.herokuapp.com")
-                .setPath("/")
-        ))
-        val welcomePage: WelcomePage = get()
-
-        welcomePage.navigate()
+        val welcomePageFactory: WelcomePageFactory = get()
+        
+        welcomePageFactory
+            .addCookies(listOf(
+                Cookie("ABC", "abc")
+                    .setDomain("the-internet.herokuapp.com")
+                    .setPath("/")
+            ))
+            .navigate()
             .clickABTesting()
             .assertPageTitleContains("A/B Test")
     }
     
     @Test
     fun `open two pages on the same page`() {
-        val welcomePage: WelcomePage = get()
-        welcomePage.navigate()
+        val welcomePageFactory: WelcomePageFactory = get()
+        val welcomePage = welcomePageFactory.navigate()
         
-        val abPage: ABTestingPage = get{parametersOf(welcomePage.page)}
-        abPage.navigate()
+        val abPageFactory: ABTestingPageFactory = get()
+        abPageFactory.navigate(welcomePage.page)
         sleep(2000)
     }
 
     @Test
     fun `open page on a new page`() {
-        val welcomePage: WelcomePage = get()
-        welcomePage.navigate()
+        val welcomePageFactory: WelcomePageFactory = get()
+        welcomePageFactory.navigate()
         
-        val abPage: ABTestingPage = get()
-        abPage.navigate()
+        val abPageFactory: ABTestingPageFactory = get()
+        abPageFactory.navigate()
+        sleep(2000)
     }
 
     @Test

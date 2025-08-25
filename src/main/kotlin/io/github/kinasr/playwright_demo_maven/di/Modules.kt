@@ -7,7 +7,9 @@ import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
 import io.github.kinasr.playwright_demo_maven.pages.ABTestingPage
+import io.github.kinasr.playwright_demo_maven.pages.ABTestingPageFactory
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
+import io.github.kinasr.playwright_demo_maven.pages.WelcomePageFactory
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.action.APIAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.APIRequestManager
@@ -220,18 +222,21 @@ val apiModule = module {
 }
 
 val pagesModule = module {
-    factory { params ->
-        WelcomePage(
-            get(),
-            params.getOrNull<Page>() ?: get<BrowserContext>().newPage()
-        ) 
-    }
-    factory { params ->
-        ABTestingPage(
-            get(),
-            params.getOrNull<Page>() ?: get<BrowserContext>().newPage()
-        ) 
-    }
+//    factory { params ->
+//        WelcomePage(
+//            get(),
+//            params.getOrNull<Page>() ?: get<BrowserContext>().newPage()
+//        ) 
+//    }
+//    factory { params ->
+//        ABTestingPage(
+//            get(),
+//            params.getOrNull<Page>() ?: get<BrowserContext>().newPage()
+//        ) 
+//    }
+    
+    single { WelcomePageFactory(get()) }
+    single { ABTestingPageFactory(get()) }
 }
 
 val utAPIModule = module {
