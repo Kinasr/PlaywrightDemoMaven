@@ -104,18 +104,6 @@ val validationModel = module {
             performer = get()
         )
     }
-
-//    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-//        scoped<GUIValidationBuilder> {
-//            GUIValidationBuilder(
-//                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
-//                report = get(),
-//                performer = get(),
-//                screenshotManager = get(),
-//                context = get()
-//            )
-//        }
-//    }
 }
 
 val playwrightModule = module {
@@ -136,22 +124,6 @@ val guiModule = module {
             playwright = get()
         )
     }
-
-//    factory<PageScreenshotManager> {
-//        PageScreenshotManager(
-//            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-//            page = get(),
-//            directory = "./screenshots"
-//        )
-//    }
-
-//    factory<LocatorScreenshotManager> { (locator: Locator) ->
-//        LocatorScreenshotManager(
-//            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-//            locator = locator,
-//            directory = "./screenshots"
-//        )
-//    }
 
     factory<BrowserContextManager> { params ->
         val context = params.getOrNull<Browser.NewContextOptions>() ?: Browser.NewContextOptions()
@@ -180,21 +152,6 @@ val guiModule = module {
             context = get()
         )
     }
-
-//    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-////        scoped<BrowserContext> { get() }
-////        scoped<Page> { get() }
-//
-//        scoped<GUI> {
-//            GUI(
-//                logger = get(named(LoggerName.PLAYWRIGHT)),
-//                report = get(),
-//                screenshot = get(),
-//                context = get(),
-//                validationBuilder = get()
-//            )
-//        }
-//    }
 }
 
 val apiModule = module {
@@ -222,19 +179,6 @@ val apiModule = module {
 }
 
 val pagesModule = module {
-//    factory { params ->
-//        WelcomePage(
-//            get(),
-//            params.getOrNull<Page>() ?: get<BrowserContext>().newPage()
-//        ) 
-//    }
-//    factory { params ->
-//        ABTestingPage(
-//            get(),
-//            params.getOrNull<Page>() ?: get<BrowserContext>().newPage()
-//        ) 
-//    }
-    
     single { WelcomePageFactory(get()) }
     single { ABTestingPageFactory(get()) }
 }
