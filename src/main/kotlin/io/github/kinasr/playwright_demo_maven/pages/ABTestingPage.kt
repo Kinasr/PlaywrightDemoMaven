@@ -9,6 +9,11 @@ class ABTestingPage(
 ): WebPage(gui, page) {
     
     private val textPageTitle = page.locator("h3")
+
+    fun navigate(): ABTestingPage {
+        gui.page(page).navigate("/abtest")
+        return this
+    }
     
     fun assertPageTitleContains(title: String) {
         gui.element(textPageTitle).validate()

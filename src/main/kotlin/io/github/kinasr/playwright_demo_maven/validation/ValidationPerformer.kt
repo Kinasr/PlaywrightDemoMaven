@@ -1,5 +1,7 @@
 package io.github.kinasr.playwright_demo_maven.validation
 
+import com.microsoft.playwright.Locator
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
@@ -11,11 +13,41 @@ class ValidationPerformer(
     val logger: PlayLogger,
     val report: Report
 ) {
-    
-//    inline fun locatorValidation(
-//        message: String,
-//        failureMessage: String,
-//    )
+
+    inline fun locatorValidation(
+        gui: GUI,
+        locator: Locator,
+        message: String,
+        failureMessage: String,
+        takeScreenshotOnFailure: Boolean = true,
+        operation: () -> Unit
+    ): Throwable? {
+        val step = report.step(message)
+
+        return runCatching(operation)
+            .fold(
+                onSuccess = {
+                    logger.info { "Validation successful: $message" }
+                    step.passed("Validation successful: $message")
+                    null
+                },
+                onFailure = { thr: Throwable ->
+                    if (takeScreenshotOnFailure) {
+                        gui.page(locator.page()).get().screenshot()?.let { image ->
+                            step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
+                        }
+                    }
+
+                    logger.error { "Validation failed: $failureMessage - with error: ${thr.message}" }
+                    when (thr) {
+                        is AssertionFailedError -> step.failed("Validation failed: $failureMessage", thr.message)
+                        is TestAbortedException -> step.skipped("Validation skipped: $message", thr.message)
+                        else -> step.broken("Validation broken: $message", thr.message)
+                    }
+                    thr
+                }
+            )
+    }
 
     inline fun guiValidation(
         message: String,

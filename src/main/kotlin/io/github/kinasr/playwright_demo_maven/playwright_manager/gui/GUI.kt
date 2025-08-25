@@ -17,10 +17,10 @@ open class GUI(
     internal val context: BrowserContext
 ) {
 
-    fun element(element: GUIElementI) = GUIElementAction(this, element)
+    fun element(element: GUIElementI) = GUIElementAction(this, element, validationBuilder)
 
     fun element(locator: Locator): GUIElementAction {
-        return GUIElementAction(this, GUIElement(locator))
+        return GUIElementAction(this, GUIElement(locator), validationBuilder)
     }
 
     fun page(page: Page): GUIPageAction {

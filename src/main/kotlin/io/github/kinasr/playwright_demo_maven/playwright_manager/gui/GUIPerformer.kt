@@ -1,19 +1,21 @@
 package io.github.kinasr.playwright_demo_maven.playwright_manager.gui
 
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
+import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
+import jdk.internal.joptsimple.internal.Messages.message
 
 class GUIPerformer(
     val logger: PlayLogger,
-    val report: Report,
-    val screenshot: ScreenshotManager,
+    val report: Report
 ) {
 
     inline fun <T> action(
         message: String,
         failureMessage: String = message,
+        gui: GUI? = null,
+        page: Page? = null,
         takeScreenshotOnFailure: Boolean = true,
         action: () -> T
     ): T {
@@ -25,11 +27,10 @@ class GUIPerformer(
             step.passed()
             result
         } catch (e: Exception) {
-            if (takeScreenshotOnFailure) {
-                screenshot.capture(message.replace(" ", "_"))
-                    ?.let { image ->
-                        step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
-                    }
+            if (gui != null && page != null && takeScreenshotOnFailure) {
+                gui.page(page).get().screenshot()?.let {
+                    step.attach("screenshot", it, AttachmentType.IMAGE_PNG)
+                }
             }
             logger.error { "$failureMessage - with error: ${e.message}" }
             step.failed(failureMessage, e.message)

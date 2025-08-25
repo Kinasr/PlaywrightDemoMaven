@@ -8,13 +8,13 @@ import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
 class GUIElementAction(
     private val gui: GUI,
     private val element: GUIElementI,
-//    private val validationBuilder: GUIValidationBuilder
+    private val validationBuilder: GUIValidationBuilder
 ) {
 
     fun click(options: (Locator.ClickOptions.() -> Unit) = { }): GUIElementAction {
-        gui.performer.action(
-            message = "Clicking on element '${element.name}'",
-            failureMessage = "Failed to click on element '${element.name}'"
+        action(
+            "Clicking on element '${element.name}'",
+            "Failed to click on element '${element.name}'"
         ) {
             val op = Locator.ClickOptions().apply(options)
             element.locator.click(op)
@@ -23,9 +23,9 @@ class GUIElementAction(
     }
 
     fun fill(text: String, options: (Locator.FillOptions.() -> Unit) = { }): GUIElementAction {
-        gui.performer.action(
-            message = "Filling text '$text' in element '${element.name}'",
-            failureMessage = "Failed to fill text '$text' in element '${element.name}'"
+        action(
+            "Filling text '$text' in element '${element.name}'",
+            "Failed to fill text '$text' in element '${element.name}'"
         ) {
             val op = Locator.FillOptions().apply(options)
             element.locator.fill(text, op)
@@ -38,6 +38,12 @@ class GUIElementAction(
     }
 
     fun validate(): GUIElementValidation {
-        return gui.validationBuilder.validate(element)
+        return validationBuilder.validate(gui, element)
+    }
+    
+    private fun <T> action(msg: String, fMsg: String, operation: () -> T): T {
+        return gui.performer.action(
+            msg, fMsg, gui, element.locator.page()
+        ) { operation() }
     }
 }

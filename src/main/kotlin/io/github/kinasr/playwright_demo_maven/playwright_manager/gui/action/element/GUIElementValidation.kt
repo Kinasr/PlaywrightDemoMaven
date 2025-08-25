@@ -2,26 +2,24 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.ele
 
 import com.microsoft.playwright.assertions.LocatorAssertions
 import com.microsoft.playwright.assertions.PlaywrightAssertions
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PageScreenshotManager
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.validation.Validation
 import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 
 class GUIElementValidation(
     builder: ValidationBuilder,
+    private val gui: GUI,
     private val element: GUIElementI,
-    private val screenshotManager: ScreenshotManager,
 ) : Validation(builder) {
     override val and = builder
     override val then = builder
 
     fun hasText(text: String, options: (LocatorAssertions.HasTextOptions.() -> Unit) = { }): GUIElementValidation {
         builder.addValidation {
-            builder.performer.guiValidation(
+            validate(
                 "Element '${element.name}' has text '$text'",
-                "Element '${element.name}' does not have text '$text'",
-                screenshotManager
+                "Element '${element.name}' does not have text '$text'"
             ) {
                 val op = LocatorAssertions.HasTextOptions().apply(options)
                 PlaywrightAssertions.assertThat(element.locator).hasText(text, op)
@@ -36,10 +34,9 @@ class GUIElementValidation(
         options: (LocatorAssertions.ContainsTextOptions.() -> Unit) = { }
     ): GUIElementValidation {
         builder.addValidation {
-            builder.performer.guiValidation(
+           validate(
                 "Element '${element.name}' has text '$text'",
                 "Element '${element.name}' does not have text '$text'",
-                screenshotManager
             ) {
                 val op = LocatorAssertions.ContainsTextOptions().apply(options)
                 PlaywrightAssertions.assertThat(element.locator).containsText(text, op)
@@ -51,10 +48,9 @@ class GUIElementValidation(
 
     fun isVisible(options: (LocatorAssertions.IsVisibleOptions.() -> Unit) = { }): GUIElementValidation {
         builder.addValidation {
-            builder.performer.guiValidation(
+            validate(
                 "Element '${element.name}' is visible",
                 "Element '${element.name}' is not visible",
-                screenshotManager
             ) {
                 val op = LocatorAssertions.IsVisibleOptions().apply(options)
                 PlaywrightAssertions.assertThat(element.locator).isVisible(op)
@@ -62,5 +58,11 @@ class GUIElementValidation(
         }
 
         return this
+    }
+
+    private fun validate(msg: String, fMsg: String, operation: () -> Unit): Throwable? {
+        return builder.performer.locatorValidation(
+            gui, element.locator, msg, fMsg
+        ) { operation() }
     }
 }

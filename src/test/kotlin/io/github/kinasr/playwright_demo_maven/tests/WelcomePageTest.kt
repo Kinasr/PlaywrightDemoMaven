@@ -6,6 +6,7 @@ import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.options.Cookie
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.PlaywrightTestScope
+import io.github.kinasr.playwright_demo_maven.pages.ABTestingPage
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
@@ -16,6 +17,7 @@ import org.koin.core.scope.Scope
 import org.koin.test.KoinTest
 import org.koin.test.get
 import org.koin.test.inject
+import java.lang.Thread.sleep
 import java.util.*
 
 class WelcomePageTest : KoinTest {
@@ -50,17 +52,36 @@ class WelcomePageTest : KoinTest {
 
     @Test
     fun `navigate to AB Testing page`() {
-//        val gui: GUI = get()
-//        gui.browser().addCookies(listOf(
-//            Cookie("ABC", "abc")
-//                .setDomain("the-internet.herokuapp.com")
-//                .setPath("/")
-//        ))
+        val gui: GUI = get()
+        gui.browser().addCookies(listOf(
+            Cookie("ABC", "abc")
+                .setDomain("the-internet.herokuapp.com")
+                .setPath("/")
+        ))
         val welcomePage: WelcomePage = get()
 
         welcomePage.navigate()
             .clickABTesting()
-            .assertPageTitleContains("A/B Testddd")
+            .assertPageTitleContains("A/B Test")
+    }
+    
+    @Test
+    fun `open two pages on the same page`() {
+        val welcomePage: WelcomePage = get()
+        welcomePage.navigate()
+        
+        val abPage: ABTestingPage = get{parametersOf(welcomePage.page)}
+        abPage.navigate()
+        sleep(2000)
+    }
+
+    @Test
+    fun `open page on a new page`() {
+        val welcomePage: WelcomePage = get()
+        welcomePage.navigate()
+        
+        val abPage: ABTestingPage = get()
+        abPage.navigate()
     }
 
     @Test

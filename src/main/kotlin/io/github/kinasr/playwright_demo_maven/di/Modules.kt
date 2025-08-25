@@ -15,8 +15,6 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUIPerformer
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.LocatorScreenshotManager
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PageScreenshotManager
 import io.github.kinasr.playwright_demo_maven.utils.constant.DateTimeFormatters
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.DoubleAdapter
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.ZonedDateTimeAdapter
@@ -101,8 +99,7 @@ val validationModel = module {
         GUIValidationBuilder(
             logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
             report = get(),
-            performer = get(),
-            screenshotManager = get<PageScreenshotManager>()
+            performer = get()
         )
     }
 
@@ -138,21 +135,21 @@ val guiModule = module {
         )
     }
 
-    factory<PageScreenshotManager> {
-        PageScreenshotManager(
-            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-            page = get(),
-            directory = "./screenshots"
-        )
-    }
+//    factory<PageScreenshotManager> {
+//        PageScreenshotManager(
+//            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+//            page = get(),
+//            directory = "./screenshots"
+//        )
+//    }
 
-    factory<LocatorScreenshotManager> { (locator: Locator) ->
-        LocatorScreenshotManager(
-            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
-            locator = locator,
-            directory = "./screenshots"
-        )
-    }
+//    factory<LocatorScreenshotManager> { (locator: Locator) ->
+//        LocatorScreenshotManager(
+//            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+//            locator = locator,
+//            directory = "./screenshots"
+//        )
+//    }
 
     factory<BrowserContextManager> { params ->
         val context = params.getOrNull<Browser.NewContextOptions>() ?: Browser.NewContextOptions()
@@ -167,13 +164,10 @@ val guiModule = module {
 
     factory<BrowserContext> { get<BrowserContextManager>().context() }
 
-    factory<Page> { get<BrowserContext>().newPage() }
-
     factory<GUIPerformer> {
         GUIPerformer(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
             report = get(),
-            screenshot = get<PageScreenshotManager>(),
         )
     }
 
@@ -226,8 +220,18 @@ val apiModule = module {
 }
 
 val pagesModule = module {
-    factory { WelcomePage(get(), get()) }
-    factory { ABTestingPage(get(), get()) }
+    factory { params ->
+        WelcomePage(
+            get(),
+            params.getOrNull<Page>() ?: get<BrowserContext>().newPage()
+        ) 
+    }
+    factory { params ->
+        ABTestingPage(
+            get(),
+            params.getOrNull<Page>() ?: get<BrowserContext>().newPage()
+        ) 
+    }
 }
 
 val utAPIModule = module {
