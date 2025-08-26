@@ -34,14 +34,7 @@ class TaskAPICollection(
                 })
             }
         }
-//        // Declare the new APIRequestManager instance in the scope
-//        scope.declare(
-//            get<APIRequestManager>(qualifier = named(PlaywrightTestScope.TEST_SCOPE)) {
-//                parametersOf(APIRequest.NewContextOptions().apply {
-//                    baseURL = "https://google.com"
-//                })
-//            }, allowOverride = true
-//        )
+        
         scope.declare(apiRequest, allowOverride = true)
 
         val a: APIAction = scope.get()
