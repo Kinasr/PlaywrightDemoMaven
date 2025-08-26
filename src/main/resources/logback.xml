@@ -5,7 +5,8 @@
     <conversionRule conversionWord="optX" class="io.github.kinasr.playwright_demo_maven.utils.logger.PlayMDCConverter"/>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %contextName [%thread] %highlight(%-5level %optX) %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %contextName [%thread] %highlight(%-5level %optX) %logger{36} - %msg%n
+            </pattern>
         </encoder>
     </appender>
 
@@ -53,7 +54,7 @@
     </logger>
 
     <!-- Root Logger -->
-    <root level="INFO">
+    <root level="Trace">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>

@@ -14,17 +14,17 @@ import java.io.Closeable
 import java.util.*
 
 class ReportStep private constructor(
+    private val logger: PlayLogger,
+    private val lifecycle: AllureLifecycle,
     private val name: String,
     private val uuid: String
 ) : KoinComponent, Closeable {
-    private val logger by inject<PlayLogger>(named(LoggerName.REPORT))
-    private val lifecycle by inject<AllureLifecycle>()
     private var isClosed = false
 
     companion object {
         fun start(
-            lifecycle: AllureLifecycle,
             logger: PlayLogger,
+            lifecycle: AllureLifecycle,
             name: String,
             parentUUID: String? = null
         ): ReportStep {
@@ -45,7 +45,7 @@ class ReportStep private constructor(
                 logger.warn { "Failed to start step '$name': ${it.message}" }
             }
 
-            return ReportStep(name, uuid)
+            return ReportStep(logger, lifecycle, name, uuid)
         }
     }
 
@@ -85,7 +85,7 @@ class ReportStep private constructor(
 
     fun step(name: String): ReportStep {
         checkNotClosed()
-        return start(lifecycle, logger, name, uuid)
+        return start(logger, lifecycle, name, uuid)
     }
 
     fun updateStatus(status: Status, newName: String? = null): ReportStep {

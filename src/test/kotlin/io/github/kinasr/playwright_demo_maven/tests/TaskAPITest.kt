@@ -6,7 +6,7 @@ import org.koin.test.KoinTest
 import org.koin.test.get
 
 class TaskAPITest : KoinTest {
-    
+
     @Test
     fun `get not found endpoint`() {
         val taskAPICollection: TaskAPICollection = get()

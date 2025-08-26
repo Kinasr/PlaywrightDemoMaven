@@ -47,6 +47,14 @@ open class Config(
             )
         }
 
+        val channel: String by lazy {
+            getEnvOrDefault(
+                "BROWSER_CHANNEL",
+                config.browser?.channel,
+                ""
+            )
+        }
+
         val headless: Boolean by lazy {
             getEnvOrDefault(
                 "BROWSER_HEADLESS",
@@ -63,11 +71,35 @@ open class Config(
             )
         }
 
+        val timeout: Double by lazy {
+            getEnvOrDefault(
+                "BROWSER_TIMEOUT",
+                config.browser?.timeout,
+                30000.0
+            )
+        }
+
         val devtools: Boolean by lazy {
             getEnvOrDefault(
                 "BROWSER_DEVTOOLS",
                 config.browser?.devtools,
                 false
+            )
+        }
+
+        val websocketEndpoint: String by lazy {
+            getEnvOrDefault(
+                "BROWSER_WEBSOCKET_ENDPOINT",
+                config.browser?.websocketEndpoint,
+                ""
+            )
+        }
+
+        val screenshotDir: String by lazy {
+            getEnvOrDefault(
+                "BROWSER_SCREENSHOT_DIR",
+                config.browser?.screenshotDir,
+                "./target/screenshots"
             )
         }
 

@@ -8,10 +8,10 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-class ZonedDateTimeAdapter(private val formatters: List<DateTimeFormatter>): TypeAdapter<ZonedDateTime>() {
+class ZonedDateTimeAdapter(private val formatters: List<DateTimeFormatter>) : TypeAdapter<ZonedDateTime>() {
     override fun write(out: JsonWriter?, value: ZonedDateTime?) {
-       if (value == null)
-           out?.nullValue()
+        if (value == null)
+            out?.nullValue()
         else
             out?.value(value.toString())
     }

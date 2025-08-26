@@ -2,12 +2,13 @@ package io.github.kinasr.playwright_demo_maven.tests
 
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.options.Cookie
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.di.PlaywrightTestScope
-import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
+import io.github.kinasr.playwright_demo_maven.pages.ABTestingPageFactory
+import io.github.kinasr.playwright_demo_maven.pages.WelcomePageFactory
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -15,6 +16,7 @@ import org.koin.core.scope.Scope
 import org.koin.test.KoinTest
 import org.koin.test.get
 import org.koin.test.inject
+import java.lang.Thread.sleep
 import java.util.*
 
 class WelcomePageTest : KoinTest {
@@ -23,40 +25,124 @@ class WelcomePageTest : KoinTest {
     private lateinit var browserContext: BrowserContextManager
     private lateinit var page: Page
 
-    @BeforeEach
-    fun setup() {
+//    @BeforeEach
+//    fun setup() {
+//        testScope = getKoin().createScope(
+//            "test_${UUID.randomUUID()}",
+//            named(PlaywrightTestScope.TEST_SCOPE)
+//        )
+
+//        browserContext = get<BrowserContextManager> {
+//            parametersOf(
+//                Browser.NewContextOptions().apply {
+//                    this.baseURL = config.app.baseUrl
+//                }
+//            )
+//        }
+
+//        browserContext = get<BrowserContextManager>()
+//
+//        val context = browserContext.context()
+//        page = context.newPage()
+//
+//        testScope.declare(context, allowOverride = true)
+//        testScope.declare(page, allowOverride = true)
+//    }
+
+    @Test
+    fun `navigate to AB Testing page`() {
+        val welcomePageFactory: WelcomePageFactory = get()
+
+        welcomePageFactory
+            .addCookies(
+                listOf(
+                    Cookie("ABC", "abc")
+                        .setDomain("the-internet.herokuapp.com")
+                        .setPath("/")
+                )
+            )
+            .navigate()
+            .clickABTesting()
+            .assertPageTitleContains("A/B Test")
+    }
+
+    @Test
+    fun `open two pages on the same page`() {
+        val welcomePageFactory: WelcomePageFactory = get()
+        val welcomePage = welcomePageFactory.navigate()
+
+        val abPageFactory: ABTestingPageFactory = get()
+        abPageFactory.navigate(welcomePage.page)
+        sleep(2000)
+    }
+
+    @Test
+    fun `open page on a new page`() {
+        val welcomePageFactory: WelcomePageFactory = get()
+        welcomePageFactory.navigate()
+
+        val abPageFactory: ABTestingPageFactory = get()
+        abPageFactory.navigate()
+        sleep(2000)
+    }
+
+    @Test
+    fun `navigate to different url`() {
         testScope = getKoin().createScope(
             "test_${UUID.randomUUID()}",
             named(PlaywrightTestScope.TEST_SCOPE)
         )
 
-        browserContext = get<BrowserContextManager> {
-            parametersOf(
-                Browser.NewContextOptions().apply {
-                    this.baseURL = config.app.baseUrl
-                }
-            )
-        }
+        testScope.declare(
+            instance = get<BrowserContextManager> {
+                parametersOf(
+                    Browser.NewContextOptions().apply {
+                        this.baseURL = "https://google.com"
+                    }
+                )
+            }, allowOverride = true
+        )
 
-        val context = browserContext.context()
-        page = context.newPage()
+        val page: Page = testScope.get()
+        page.navigate("/")
 
-        testScope.declare(context, allowOverride = true)
-        testScope.declare(page, allowOverride = true)
+        Thread.sleep(2000)
+        testScope.close()
     }
 
     @Test
-    fun `navigate to AB Testing page`() {
-        val welcomePage: WelcomePage = testScope.get()
+    fun ttt() {
+        Playwright.create().use { playwright ->
+            // Use the URL from the command line output
+            val wsUrl = "ws://127.0.0.1:51159/devtools/browser/f8f94d39-6617-4340-bd20-94d3c909b0b4"
 
-        welcomePage.navigate()
-            .clickABTesting()
-            .assertPageTitleContains("A/B Test")
+            // Connect to the existing browser
+            val browser: Browser = playwright.chromium().connect(wsUrl)
+
+            // Now you can create a new page in the connected browser
+            val page = browser.newPage()
+            page.navigate("https://www.google.com")
+            println("Page title: " + page.title())
+        }
     }
 
-    @AfterEach
-    fun tearDown() {
-        browserContext.close()
-        testScope.close()
+    @Test
+    fun ttt02() {
+        val playwright = Playwright.create()
+        val browser = playwright.chromium().launch()
+        val context = browser.newContext()
+        val page = context.newPage()
+
+
+        context.pages()
+        context.backgroundPages()
+
     }
+
+//    @AfterEach
+//    fun tearDown() {
+//        browserContext.close()
+//        testScope.close()
+//    }
+
 }

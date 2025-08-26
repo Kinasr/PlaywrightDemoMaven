@@ -16,28 +16,28 @@ class BrowserManager(
     private val config: Config,
     private val playwright: Playwright
 ) : KoinComponent, Closeable {
-
-    private val browserPool: ConcurrentMap<Long, Browser> = ConcurrentHashMap()
+    companion object {
+        private val browserPool: ConcurrentMap<Long, Browser> = ConcurrentHashMap()
+    }
 
     fun browser(): Browser {
-        val thr = Thread.currentThread()
-        val currentThreadId = thr.threadId()
+        val worker = Thread.currentThread()
+        val workerId = worker.threadId()
 
-        return browserPool.compute(currentThreadId) { _, browser ->
+        return browserPool.compute(workerId) { _, browser ->
             browser?.let { b ->
                 if (b.isConnected) browser
                 else {
-                    runCatching { closeBrowser(currentThreadId, b) }
-                        .onFailure { logger.warn { "Error closing unhealthy browser for thread ${thr.name}: ${it.message}" } }
+                    runCatching { closeBrowser(workerId, b) }
+                        .onFailure { logger.warn { "Error closing unhealthy browser for thread ${worker.name}: ${it.message}" } }
                     null
                 }
-
             } ?: run {
-                logger.debug { "Initializing browser for thread: ${thr.name} (ID: $currentThreadId)" }
+                logger.info { "Initializing browser for thread: ${worker.name} (ID: $workerId)" }
                 runCatching { initBrowser() }
-                    .onSuccess { logger.info { "Browser initialized: ${config.browser.name} for thread: ${thr.name}" } }
+                    .onSuccess { logger.debug { "Browser initialized: ${config.browser.name} for thread: ${worker.name}" } }
                     .onFailure { e ->
-                        logger.error { "Failed to initialize browser: ${e.message} for thread: ${thr.name}" }
+                        logger.error { "Failed to initialize browser: ${e.message} for thread: ${worker.name}" }
                         throw e
                     }
                     .getOrNull()
@@ -46,15 +46,14 @@ class BrowserManager(
     }
 
     private fun initBrowser(): Browser {
-        val options = browserOptions()
         return try {
             when (config.browser.name.lowercase()) {
-                "firefox" -> playwright.firefox().launch(options)
-                "webkit" -> playwright.webkit().launch(options)
-                "chrome", "chromium" -> playwright.chromium().launch(options)
+                "firefox" -> launchOrConnectBrowser(playwright.firefox())
+                "webkit" -> launchOrConnectBrowser(playwright.webkit())
+                "chrome", "chromium" -> launchOrConnectBrowser(playwright.chromium())
                 else -> {
                     logger.warn { "Unknown browser '${config.browser.name}', defaulting to Chromium" }
-                    playwright.chromium().launch(options)
+                    launchOrConnectBrowser(playwright.chromium())
                 }
             }
         } catch (e: Exception) {
@@ -63,18 +62,34 @@ class BrowserManager(
         }
     }
 
-    private fun browserOptions(): BrowserType.LaunchOptions {
+    private fun launchOrConnectBrowser(browserType: BrowserType): Browser {
+        if (config.browser.websocketEndpoint.isNotBlank()) {
+            return browserType.connect(config.browser.websocketEndpoint, browserConnectOptions())
+        }
+        return browserType.launch(browserLaunchOptions())
+    }
+
+    private fun browserLaunchOptions(): BrowserType.LaunchOptions {
         return BrowserType.LaunchOptions().apply {
             headless = config.browser.headless
             slowMo = config.browser.slowMo
+            timeout = config.browser.timeout
+            channel = config.browser.channel
+        }
+    }
+
+    private fun browserConnectOptions(): BrowserType.ConnectOptions {
+        return BrowserType.ConnectOptions().apply {
+            slowMo = config.browser.slowMo
+            timeout = config.browser.timeout
         }
     }
 
     @Synchronized
-    fun clearBrowserPool() {
+    fun clearPool() {
         logger.info { "Clearing browser pool." }
-        browserPool.forEach { browser ->
-            closeBrowser(browser.key, browser.value)
+        browserPool.forEach { workerId, browser ->
+            closeBrowser(workerId, browser)
         }
         browserPool.clear()
     }
@@ -86,6 +101,6 @@ class BrowserManager(
     }
 
     override fun close() {
-        clearBrowserPool()
+        clearPool()
     }
 }

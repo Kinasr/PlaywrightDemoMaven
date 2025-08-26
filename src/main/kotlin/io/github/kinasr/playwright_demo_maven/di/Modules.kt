@@ -1,28 +1,29 @@
 package io.github.kinasr.playwright_demo_maven.di
 
 import com.google.gson.GsonBuilder
-import com.microsoft.playwright.*
+import com.microsoft.playwright.APIRequest
+import com.microsoft.playwright.Browser
+import com.microsoft.playwright.BrowserContext
+import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.aut.api.TaskAPICollection
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
-import io.github.kinasr.playwright_demo_maven.pages.ABTestingPage
-import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
+import io.github.kinasr.playwright_demo_maven.pages.ABTestingPageFactory
+import io.github.kinasr.playwright_demo_maven.pages.WelcomePageFactory
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.action.APIAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.manager.APIRequestManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUIPerformer
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserManager
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.PlayScreenshot
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.utils.constant.DateTimeFormatters
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.DoubleAdapter
 import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.ZonedDateTimeAdapter
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
-import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
 import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.validation.ValidationPerformer
 import io.qameta.allure.Allure
@@ -30,7 +31,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.time.ZonedDateTime
 
-// Define the test scope qualifier
 val configModule = module {
     single<ConfigLoader> { ConfigLoader() }
     single<ConfigRecord> { get<ConfigLoader>().config }
@@ -61,7 +61,10 @@ var logModule = module {
 
 val reportModule = module {
     single { Allure.getLifecycle() }
-    single { Report() }
+    single { Report(
+        get<PlayLogger>(named(LoggerName.REPORT)),
+        get()
+    ) }
 }
 
 val utilsModule = module {
@@ -95,18 +98,6 @@ val validationModel = module {
             performer = get()
         )
     }
-
-    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        scoped<GUIValidationBuilder> {
-            GUIValidationBuilder(
-                logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
-                report = get(),
-                performer = get(),
-                screenshotManager = get(),
-                context = get()
-            )
-        }
-    }
 }
 
 val playwrightModule = module {
@@ -128,32 +119,32 @@ val guiModule = module {
         )
     }
 
-    single<ScreenshotManager> {
-        PlayScreenshot(get<PlayLogger>(named(LoggerName.PLAYWRIGHT)), "/screenshots")
-    }
+    factory<BrowserContextManager> { params ->
+        val context = params.getOrNull<Browser.NewContextOptions>() ?: Browser.NewContextOptions()
 
-    factory { (options: Browser.NewContextOptions) ->
         BrowserContextManager(
             logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            config = get(),
             browser = get<BrowserManager>().browser(),
-            contextOptions = options
+            contextOptions = context
         )
     }
 
-    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        scoped<BrowserContextManager> { get() }
-        scoped<BrowserContext> { get() }
-        scoped<Page> { get() }
+    factory<BrowserContext> { get<BrowserContextManager>().context() }
 
-        scoped<GUI> {
-            GUI(
-                logger = get(named(LoggerName.PLAYWRIGHT)),
-                report = get(),
-                screenshot = get(),
-                context = get(),
-                validationBuilder = get()
-            )
-        }
+    factory<GUIPerformer> {
+        GUIPerformer(
+            logger = get<PlayLogger>(named(LoggerName.PLAYWRIGHT)),
+            report = get(),
+        )
+    }
+
+    factory<GUI> {
+        GUI(
+            performer = get(),
+            validationBuilder = get(),
+            context = get()
+        )
     }
 }
 
@@ -182,10 +173,8 @@ val apiModule = module {
 }
 
 val pagesModule = module {
-    scope(named(PlaywrightTestScope.TEST_SCOPE)) {
-        scoped { WelcomePage(get(), get()) }
-        scoped { ABTestingPage(get(), get()) }
-    }
+    single { WelcomePageFactory(get()) }
+    single { ABTestingPageFactory(get()) }
 }
 
 val utAPIModule = module {

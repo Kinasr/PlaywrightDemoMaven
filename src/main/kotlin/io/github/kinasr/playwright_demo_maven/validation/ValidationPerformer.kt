@@ -1,7 +1,7 @@
 package io.github.kinasr.playwright_demo_maven.validation
 
-import com.microsoft.playwright.BrowserContext
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
+import com.microsoft.playwright.Locator
+import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
@@ -13,11 +13,11 @@ class ValidationPerformer(
     val report: Report
 ) {
 
-    inline fun guiValidation(
+    inline fun locatorValidation(
+        gui: GUI,
+        locator: Locator,
         message: String,
         failureMessage: String,
-        screenshot: ScreenshotManager,
-        context: BrowserContext,
         takeScreenshotOnFailure: Boolean = true,
         operation: () -> Unit
     ): Throwable? {
@@ -32,7 +32,7 @@ class ValidationPerformer(
                 },
                 onFailure = { thr: Throwable ->
                     if (takeScreenshotOnFailure) {
-                        screenshot.takeScreenshot(context, message)?.let { image ->
+                        gui.page(locator.page()).get().screenshot()?.let { image ->
                             step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
                         }
                     }

@@ -12,7 +12,7 @@ object DateTimeFormatters {
         .appendPattern("XXX")
         .toFormatter()
         .withZone(ZoneId.of("UTC"))
-    
+
     val ZONED_DATE_TIME_FORMATTER_WITHOUT_DECIMAL: DateTimeFormatter = DateTimeFormatterBuilder()
         .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
         .toFormatter()

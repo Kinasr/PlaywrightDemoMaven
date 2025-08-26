@@ -12,6 +12,7 @@ fun <T> getEnvOrDefault(envVarName: String, fileValue: T?, defaultValue: T): T {
                 else -> envValue as T
             }
         }
+
         fileValue != null -> fileValue
         else -> defaultValue
     }

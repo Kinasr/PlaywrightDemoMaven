@@ -1,6 +1,5 @@
 package io.github.kinasr.playwright_demo_maven.utils.report
 
-import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
 import io.github.kinasr.playwright_demo_maven.utils.report.model.LinkType
@@ -9,13 +8,12 @@ import io.qameta.allure.AllureLifecycle
 import io.qameta.allure.model.Link
 import io.qameta.allure.model.Parameter
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.qualifier.named
 import org.opentest4j.TestAbortedException
 
-class Report : KoinComponent {
-    private val logger by inject<PlayLogger>(named(LoggerName.REPORT))
-    private val lifecycle by inject<AllureLifecycle>()
+class Report(
+    private val logger: PlayLogger,
+    private val lifecycle: AllureLifecycle
+) : KoinComponent {
 
     fun epic(name: String): Report {
         runCatching {
@@ -121,7 +119,7 @@ class Report : KoinComponent {
     }
 
     fun step(name: String): ReportStep {
-        return ReportStep.start(lifecycle, logger, name)
+        return ReportStep.start(logger, lifecycle, name)
     }
 
     inline fun <T> step(name: String, action: ReportStep.() -> T): T {

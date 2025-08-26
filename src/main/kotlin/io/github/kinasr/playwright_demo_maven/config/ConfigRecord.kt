@@ -16,10 +16,13 @@ data class PlaywrightConfig(
 
 data class BrowserConfig(
     var name: String? = null,
+    var channel: String? = null,
     var headless: Boolean? = null,
     var timeout: Double? = null,
     var slowMo: Double? = null,
     var devtools: Boolean? = null,
+    var websocketEndpoint: String? = null,
+    var screenshotDir: String? = null,
     var viewport: ViewPortConfig? = null
 )
 

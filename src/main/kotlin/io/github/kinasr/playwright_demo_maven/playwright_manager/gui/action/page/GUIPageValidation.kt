@@ -5,7 +5,6 @@ import com.microsoft.playwright.assertions.PageAssertions
 import com.microsoft.playwright.assertions.PlaywrightAssertions
 import io.github.kinasr.playwright_demo_maven.validation.Validation
 import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
-import io.github.kinasr.playwright_demo_maven.validation.ValidationPerformer
 
 class GUIPageValidation(
     builder: ValidationBuilder,

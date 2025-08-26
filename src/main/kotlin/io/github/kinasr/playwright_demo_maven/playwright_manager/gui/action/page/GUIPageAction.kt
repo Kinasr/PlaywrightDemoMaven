@@ -2,22 +2,32 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.pag
 
 import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
-import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 
 class GUIPageAction(
     private val gui: GUI,
-    private val validationBuilder: ValidationBuilder,
     private val page: Page
 ) {
 
     fun navigate(url: String = "", options: (Page.NavigateOptions.() -> Unit) = { }): GUIPageAction {
         val urlMsg = url.ifBlank { "BaseURL" }
-        gui.performAction(
-            message = "Navigating to $urlMsg",
-            failureMessage = "Failed to navigate to $urlMsg",
+        action(
+            "Navigating to $urlMsg",
+            "Failed to navigate to $urlMsg",
         ) {
             val op = Page.NavigateOptions().apply(options)
             page.navigate(url, op)
+        }
+        return this
+    }
+
+    fun focus(): GUIPageAction {
+        val pageTitle = this.get().title()
+
+        action(
+            "Focusing on page $pageTitle",
+            "Failed to focus on page $pageTitle",
+        ) {
+            page.bringToFront()
         }
         return this
     }
@@ -27,6 +37,12 @@ class GUIPageAction(
     }
 
     fun validate(): GUIPageValidation {
-        return GUIPageValidation(validationBuilder, page)
+        return gui.validationBuilder.validate(page)
+    }
+
+    private fun <T> action(msg: String, fMsg: String, operation: () -> T): T {
+        return gui.performer.action(
+            msg, fMsg, gui, page
+        ) { operation() }
     }
 }
