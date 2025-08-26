@@ -46,8 +46,8 @@ open class Config(
                 "chromium"
             )
         }
-        
-        val channel: String by lazy { 
+
+        val channel: String by lazy {
             getEnvOrDefault(
                 "BROWSER_CHANNEL",
                 config.browser?.channel,
@@ -70,8 +70,8 @@ open class Config(
                 0.0
             )
         }
-        
-        val timeout: Double by lazy { 
+
+        val timeout: Double by lazy {
             getEnvOrDefault(
                 "BROWSER_TIMEOUT",
                 config.browser?.timeout,
@@ -86,7 +86,7 @@ open class Config(
                 false
             )
         }
-        
+
         val websocketEndpoint: String by lazy {
             getEnvOrDefault(
                 "BROWSER_WEBSOCKET_ENDPOINT",

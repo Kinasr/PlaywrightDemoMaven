@@ -3,7 +3,6 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.api.validation
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.model.APIResult
 import io.github.kinasr.playwright_demo_maven.validation.Validation
 import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
-import io.github.kinasr.playwright_demo_maven.validation.ValidationPerformer
 import org.opentest4j.AssertionFailedError
 
 class APIValidation<T>(
@@ -16,7 +15,7 @@ class APIValidation<T>(
     fun isOK(): APIValidation<T> {
         return this hasStatusCode 200
     }
-    
+
     fun isNotFound(): APIValidation<T> {
         return this hasStatusCode 404
     }

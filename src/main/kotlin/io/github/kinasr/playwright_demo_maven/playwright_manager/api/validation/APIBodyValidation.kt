@@ -3,7 +3,6 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.api.validation
 import io.github.kinasr.playwright_demo_maven.validation.StringValidation
 import io.github.kinasr.playwright_demo_maven.validation.Validation
 import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
-import io.github.kinasr.playwright_demo_maven.validation.ValidationPerformer
 
 class APIBodyValidation<T>(
     builder: ValidationBuilder,

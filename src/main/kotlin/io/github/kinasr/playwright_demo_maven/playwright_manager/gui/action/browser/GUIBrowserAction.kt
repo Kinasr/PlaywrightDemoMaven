@@ -38,7 +38,7 @@ class GUIBrowserAction(
 
         return gui.page(page).focus()
     }
-    
+
     fun addCookies(cookies: List<Cookie>): GUIBrowserAction {
         gui.performer.action(
             message = "Adding cookies",

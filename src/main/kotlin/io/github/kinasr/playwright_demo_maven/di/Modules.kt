@@ -1,14 +1,15 @@
 package io.github.kinasr.playwright_demo_maven.di
 
 import com.google.gson.GsonBuilder
-import com.microsoft.playwright.*
+import com.microsoft.playwright.APIRequest
+import com.microsoft.playwright.Browser
+import com.microsoft.playwright.BrowserContext
+import com.microsoft.playwright.Playwright
 import io.github.kinasr.playwright_demo_maven.aut.api.TaskAPICollection
 import io.github.kinasr.playwright_demo_maven.config.Config
 import io.github.kinasr.playwright_demo_maven.config.ConfigLoader
 import io.github.kinasr.playwright_demo_maven.config.ConfigRecord
-import io.github.kinasr.playwright_demo_maven.pages.ABTestingPage
 import io.github.kinasr.playwright_demo_maven.pages.ABTestingPageFactory
-import io.github.kinasr.playwright_demo_maven.pages.WelcomePage
 import io.github.kinasr.playwright_demo_maven.pages.WelcomePageFactory
 import io.github.kinasr.playwright_demo_maven.playwright_manager.PlaywrightManager
 import io.github.kinasr.playwright_demo_maven.playwright_manager.api.action.APIAction

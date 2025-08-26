@@ -35,7 +35,7 @@ class GUIElementValidation(
         options: (LocatorAssertions.ContainsTextOptions.() -> Unit) = { }
     ): GUIElementValidation {
         builder.addValidation {
-           validate(msg.first, msg.second) {
+            validate(msg.first, msg.second) {
                 val op = LocatorAssertions.ContainsTextOptions().apply(options)
                 PlaywrightAssertions.assertThat(element.locator).containsText(text, op)
             }

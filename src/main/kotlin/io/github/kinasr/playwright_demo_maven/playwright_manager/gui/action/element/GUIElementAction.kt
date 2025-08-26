@@ -40,7 +40,7 @@ class GUIElementAction(
     fun validate(): GUIElementValidation {
         return validationBuilder.validate(gui, element)
     }
-    
+
     private fun <T> action(msg: String, fMsg: String, operation: () -> T): T {
         return gui.performer.action(
             msg, fMsg, gui, element.locator.page()

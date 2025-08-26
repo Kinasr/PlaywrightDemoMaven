@@ -1,6 +1,5 @@
 package io.github.kinasr.playwright_demo_maven.listener
 
-import com.microsoft.playwright.BrowserContext
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.manager.BrowserContextManager
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext

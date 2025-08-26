@@ -5,10 +5,10 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 
 class ABTestingPageFactory(
     gui: GUI
-): WebPageFactory(gui) {
+) : WebPageFactory(gui) {
     override fun navigate(page: Page?): WebPage {
         val finalPage = page ?: gui.browser().newPage()
-        
+
         gui.page(finalPage).navigate("/abtest")
         return ABTestingPage(gui, finalPage)
     }
@@ -19,7 +19,7 @@ class ABTestingPage(
     page: Page
 ) : WebPage(gui, page) {
 
-    private val textPageTitle = page.locator("h3") 
+    private val textPageTitle = page.locator("h3")
 
     fun navigate(): ABTestingPage {
         gui.page(page).navigate("/abtest")
