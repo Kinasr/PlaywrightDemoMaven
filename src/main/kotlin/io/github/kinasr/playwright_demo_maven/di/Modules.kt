@@ -23,7 +23,6 @@ import io.github.kinasr.playwright_demo_maven.utils.gson_adapter.ZonedDateTimeAd
 import io.github.kinasr.playwright_demo_maven.utils.logger.LoggerName
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
-import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
 import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 import io.github.kinasr.playwright_demo_maven.validation.ValidationPerformer
 import io.qameta.allure.Allure
@@ -91,14 +90,6 @@ val validationModel = module {
 
     single<ValidationBuilder> {
         ValidationBuilder(
-            logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
-            report = get(),
-            performer = get()
-        )
-    }
-
-    factory<GUIValidationBuilder> {
-        GUIValidationBuilder(
             logger = get<PlayLogger>(named(LoggerName.VALIDATION)),
             report = get(),
             performer = get()

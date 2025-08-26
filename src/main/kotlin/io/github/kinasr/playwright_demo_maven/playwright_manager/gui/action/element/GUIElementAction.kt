@@ -3,12 +3,12 @@ package io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.ele
 import com.microsoft.playwright.Locator
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
-import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 
 class GUIElementAction(
     private val gui: GUI,
     private val element: GUIElementI,
-    private val validationBuilder: GUIValidationBuilder
+    private val validationBuilder: ValidationBuilder
 ) {
 
     fun click(options: (Locator.ClickOptions.() -> Unit) = { }): GUIElementAction {

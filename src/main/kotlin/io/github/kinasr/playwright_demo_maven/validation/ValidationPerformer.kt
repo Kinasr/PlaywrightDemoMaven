@@ -2,7 +2,6 @@ package io.github.kinasr.playwright_demo_maven.validation
 
 import com.microsoft.playwright.Locator
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.GUI
-import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.screenshot.ScreenshotManager
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
@@ -34,40 +33,6 @@ class ValidationPerformer(
                 onFailure = { thr: Throwable ->
                     if (takeScreenshotOnFailure) {
                         gui.page(locator.page()).get().screenshot()?.let { image ->
-                            step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
-                        }
-                    }
-
-                    logger.error { "Validation failed: $failureMessage - with error: ${thr.message}" }
-                    when (thr) {
-                        is AssertionFailedError -> step.failed("Validation failed: $failureMessage", thr.message)
-                        is TestAbortedException -> step.skipped("Validation skipped: $message", thr.message)
-                        else -> step.broken("Validation broken: $message", thr.message)
-                    }
-                    thr
-                }
-            )
-    }
-
-    inline fun guiValidation(
-        message: String,
-        failureMessage: String,
-        screenshot: ScreenshotManager,
-        takeScreenshotOnFailure: Boolean = true,
-        operation: () -> Unit
-    ): Throwable? {
-        val step = report.step(message)
-
-        return runCatching(operation)
-            .fold(
-                onSuccess = {
-                    logger.info { "Validation successful: $message" }
-                    step.passed("Validation successful: $message")
-                    null
-                },
-                onFailure = { thr: Throwable ->
-                    if (takeScreenshotOnFailure) {
-                        screenshot.capture(message)?.let { image ->
                             step.attach("screenshot", image, AttachmentType.IMAGE_PNG)
                         }
                     }

@@ -28,6 +28,9 @@ class ABTestingPage(
 
     fun assertPageTitleContains(title: String) {
         gui.element(textPageTitle).validate()
-            .containsText(title).then.assert()
+            .containsText(
+                title,
+                "The ABTesting page title is correct" to "The ABTesting page title is incorrect"
+            ).then.assert()
     }
 }

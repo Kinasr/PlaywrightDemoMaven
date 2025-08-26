@@ -8,28 +8,30 @@ class StringValidation(
 ) : Validation(builder) {
     override val and = builder
     override val then = builder
-    
-    fun isNull(): StringValidation {
+
+    fun isNull(
+        msg: Pair<String, String> = "String is not null" to "String $actual is null"
+    ): StringValidation {
         builder.addValidation {
-            builder.performer.validation(
-                "String is null",
-                "String $actual is not null"
-            ) {
+            builder.performer.validation(msg.first, msg.second) {
                 if (actual != null)
-                    throw AssertionFailedError("String $actual is not null")
+                    throw AssertionFailedError(msg.second)
             }
         }
         return this
     }
-    
-    infix fun equals(expected: String): StringValidation {
+
+    fun equals(
+        expected: String,
+        msg: Pair<String, String> = "String is $expected" to "String $actual is not equal to $expected"
+    ): StringValidation {
         builder.addValidation {
             builder.performer.validation(
-                "String is $expected",
-                "String $actual is not equal to $expected"
+                msg.first,
+                msg.second
             ) {
                 if (actual != expected)
-                    throw AssertionFailedError("String $actual is not equal to $expected")
+                    throw AssertionFailedError(msg.second)
             }
         }
         return this

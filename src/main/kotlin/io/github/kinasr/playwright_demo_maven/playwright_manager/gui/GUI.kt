@@ -9,11 +9,11 @@ import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.elem
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.action.page.GUIPageAction
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElement
 import io.github.kinasr.playwright_demo_maven.playwright_manager.gui.model.GUIElementI
-import io.github.kinasr.playwright_demo_maven.validation.GUIValidationBuilder
+import io.github.kinasr.playwright_demo_maven.validation.ValidationBuilder
 
 open class GUI(
     internal val performer: GUIPerformer,
-    internal val validationBuilder: GUIValidationBuilder,
+    internal val validationBuilder: ValidationBuilder,
     internal val context: BrowserContext
 ) {
 

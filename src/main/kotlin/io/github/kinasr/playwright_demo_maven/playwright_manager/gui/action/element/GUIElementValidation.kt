@@ -31,13 +31,11 @@ class GUIElementValidation(
 
     fun containsText(
         text: String,
+        msg: Pair<String, String> = "Element '${element.name}' has text '$text'" to "Element '${element.name}' does not have text '$text'",
         options: (LocatorAssertions.ContainsTextOptions.() -> Unit) = { }
     ): GUIElementValidation {
         builder.addValidation {
-           validate(
-                "Element '${element.name}' has text '$text'",
-                "Element '${element.name}' does not have text '$text'",
-            ) {
+           validate(msg.first, msg.second) {
                 val op = LocatorAssertions.ContainsTextOptions().apply(options)
                 PlaywrightAssertions.assertThat(element.locator).containsText(text, op)
             }

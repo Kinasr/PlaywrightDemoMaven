@@ -4,7 +4,6 @@ import com.microsoft.playwright.Page
 import io.github.kinasr.playwright_demo_maven.utils.logger.PlayLogger
 import io.github.kinasr.playwright_demo_maven.utils.report.Report
 import io.github.kinasr.playwright_demo_maven.utils.report.model.AttachmentType
-import jdk.internal.joptsimple.internal.Messages.message
 
 class GUIPerformer(
     val logger: PlayLogger,
