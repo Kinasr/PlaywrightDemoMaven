@@ -31,7 +31,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.time.ZonedDateTime
 
-// Define the test scope qualifier
 val configModule = module {
     single<ConfigLoader> { ConfigLoader() }
     single<ConfigRecord> { get<ConfigLoader>().config }
@@ -62,7 +61,10 @@ var logModule = module {
 
 val reportModule = module {
     single { Allure.getLifecycle() }
-    single { Report() }
+    single { Report(
+        get<PlayLogger>(named(LoggerName.REPORT)),
+        get()
+    ) }
 }
 
 val utilsModule = module {
